@@ -73,10 +73,6 @@ OPERATIONS
     cache.
 
 OPTIONS
-  --upgrade
-    Install even if already installed. this is useful if you have run
-    ‘sage update’ and would like to install the new version.
-
   --nodeps
     Specify this option to skip all dependency checks.
 
@@ -426,17 +422,24 @@ _searchall() {
 _install() {
   check_packages
   find_workspace
-  local pkg dn bn requires wr package sbq script
+  local pkg dn bn requires sbq script
+  shopt -s lastpipe
   for pkg in "${pks[@]}"
   do
 
-  if [ ! -v upgrade ]
+  awk '
+  $1 == "@" {
+    br = $2
+  }
+  $1 == "install:" && br == ch {
+    print $2
+    exit
+  }
+  ' ch=$pkg setup.ini | read de
+  if [ -e ../$de -a -e /etc/setup/$pkg.lst.gz ]
   then
-    if grep -q "^$pkg " /etc/setup/installed.db
-    then
-      echo Package $pkg is already installed, skipping
-      continue
-    fi
+    echo Package $pkg up to date, skipping
+    continue
   fi
   if [ "$sbq" ]
   then
@@ -475,24 +478,11 @@ _install() {
 
   requires=$(awk '$1=="requires", $0=$2' FS=': ' desc)
   cd "$OLDPWD"
-  wr=0
   if [ "$requires" ]
   then
     echo Package $pkg requires the following packages, installing:
     echo $requires
-    for package in $requires
-    do
-      if grep -q "^$package " /etc/setup/installed.db
-      then
-        echo Package $package is already installed, skipping
-        continue
-      fi
-      sage install --noscripts $package || wr=1
-    done
-  fi
-  if [ wr = 1 ]
-  then
-    echo some required packages did not install, continuing
+    sage install --noscripts $requires
   fi
 
   # run all postinstall scripts
@@ -628,11 +618,6 @@ do
 
     --nodeps)
       nodeps=1
-      shift
-    ;;
-
-    --upgrade)
-      upgrade=1
       shift
     ;;
 
