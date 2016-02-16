@@ -423,7 +423,6 @@ _install() {
   check_packages
   find_workspace
   local pkg dn bn requires sbq script
-  shopt -s lastpipe
   for pkg in "${pks[@]}"
   do
 
@@ -433,9 +432,9 @@ _install() {
   }
   $1 == "install:" && br == ch {
     print $2
-    exit
   }
-  ' ch=$pkg setup.ini | read de
+  ' ch=$pkg setup.ini >&3
+  read de <&4
   if [ -e ../$de -a -e /etc/setup/$pkg.lst.gz ]
   then
     echo Package $pkg up to date, skipping
@@ -655,7 +654,8 @@ do
   esac
 done
 
-set -a
+set -a /var/log/std.log
+exec 3>$1 4<$1
 
 if [ "$command" ]
 then
