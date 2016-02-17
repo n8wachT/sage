@@ -426,16 +426,17 @@ _install() {
   for pkg in "${pks[@]}"
   do
 
-  awk '
+  if awk '
+  function e(file) {
+    return getline < file < 0 ? 0 : 1
+  }
   $1 == "@" {
     br = $2
   }
   $1 == "install:" && br == ch {
-    print $2
+    exit e("../" $2) && e("/etc/setup/" ch ".lst.gz") ? 0 : 1
   }
-  ' ch=$pkg setup.ini >&3
-  read de <&4
-  if [ -e ../$de -a -e /etc/setup/$pkg.lst.gz ]
+  ' ch=$pkg setup.ini
   then
     echo Package $pkg up to date, skipping
     continue
@@ -654,8 +655,7 @@ do
   esac
 done
 
-set -a /var/log/std.log
-exec 3>$1 4<$1
+set -a
 
 if [ "$command" ]
 then
