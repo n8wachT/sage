@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/dash
 usage="\
 NAME
   Sage - package manager utility
@@ -139,18 +139,18 @@ get_setup() {
   fi
 }
 
-check_packages() {
-  if [ "$pks" ]
+no_targets() {
+  if [ -s /etc/setup/targets.db ]
   then
-    return 0
+    return 1
   else
     echo No packages found.
-    return 1
+    return 0
   fi
 }
 
 warn() {
-  printf '\e[1;31m%s\e[m\n' "$*" >&2
+  printf '\033[1;31m%s\033[m\n' "$*" >&2
 }
 
 _update() {
@@ -161,184 +161,179 @@ _update() {
 }
 
 _category() {
-  check_packages
-  find_workspace
-  for pkg in "${pks[@]}"
-  do
-    awk '
-    $1 == "@" {
-      pck = $2
-    }
-    $1 == "category:" && $0 ~ query {
-      print pck
-    }
-    ' query="$pks" setup.ini
-  done
-}
-
-_list() {
-  local sbq
-  for pkg in "${pks[@]}"
-  do
-    if [ "$sbq" ]
-    then
-      echo
-    else
-      sbq=1
-    fi
-    awk 'NR>1 && $1~pkg && $0=$1' pkg="$pkg" /etc/setup/installed.db
-  done
-  if [ "$sbq" ]
+  if no_targets
   then
     return
   fi
-  awk 'NR>1 && $0=$1' /etc/setup/installed.db
+  find_workspace
+  awk '
+  FILENAME ~ ARGV[1] {
+    query = $0
+  }
+  FILENAME ~ ARGV[2] {
+    if ($1 == "@")
+      pck = $2
+    if ($1 == "category:" && $0 ~ query)
+      print pck
+  }
+  ' /etc/setup/targets.db setup.ini
+}
+
+_list() {
+  awk '
+  FILENAME ~ ARGV[1] {
+    pkg = $0
+  }
+  FILENAME ~ ARGV[2] && FNR > 1 && $1 ~ pkg {
+    print $1
+  }
+  ' /etc/setup/targets.db /etc/setup/installed.db
 }
 
 _listall() {
-  check_packages
+  if no_targets
+  then
+    return
+  fi
   find_workspace
-  local sbq
-  for pkg in "${pks[@]}"
-  do
-    if [ "$sbq" ]
-    then
-      echo
-    else
-      sbq=1
-    fi
-    awk '$1~pkg && $0=$1' RS='\n\n@ ' FS='\n' pkg="$pkg" setup.ini
-  done
+  awk '
+  BEGIN {
+    RS = "\n\n@ "
+    FS = "\n"
+  }
+  FILENAME ~ ARGV[1] {
+    pkg = $1
+  }
+  FILENAME ~ ARGV[2] && $1 ~ pkg {
+    print $1
+  }
+  ' /etc/setup/targets.db setup.ini
 }
 
 _listfiles() {
-  check_packages
+  if no_targets
+  then
+    return
+  fi
   find_workspace
-  local pkg sbq
-  for pkg in "${pks[@]}"
-  do
-    if [ "$sbq" ]
-    then
-      echo
-    else
-      sbq=1
-    fi
-    if [ ! -e /etc/setup/"$pkg".lst.gz ]
-    then
-      download "$pkg"
-    fi
-    gzip -cd /etc/setup/"$pkg".lst.gz
-  done
+  read pkg </etc/setup/targets.db
+  if [ ! -e /etc/setup/$pkg.lst.gz ]
+  then
+    download $pkg
+  fi
+  gzip -cd /etc/setup/$pkg.lst.gz
 }
 
 _show() {
+  if no_targets
+  then
+    return
+  fi
   find_workspace
-  check_packages
-  local sbq
-  for pkg in "${pks[@]}"
-  do
-    if [ "$sbq" ]
-    then
-      echo
-    else
-      sbq=1
-    fi
-    awk '
-    $1 == query {
-      print
-      fd++
-    }
-    END {
-      if (! fd)
-        print "Unable to locate package " query
-    }
-    ' RS='\n\n@ ' FS='\n' query="$pkg" setup.ini
-  done
+  awk '
+  BEGIN {
+    RS = "\n\n@ "
+    FS = "\n"
+  }
+  FILENAME ~ ARGV[1] {
+    query = $1
+  }
+  FILENAME ~ ARGV[2] && $1 == query {
+    print
+    fd++
+  }
+  END {
+    if (! fd)
+      print "Unable to locate package " query
+  }
+  ' /etc/setup/targets.db setup.ini
 }
 
+smartmatch='
+function smartmatch(small, large,    values) {
+  for (each in large)
+    values[large[each]]
+  return small in values
+}
+'
+
 _depends() {
+  if no_targets
+  then
+    return
+  fi
   find_workspace
-  check_packages
-  for pkg in "${pks[@]}"
-  do
-    awk '
-    @include "join"
-    $1 == "@" {
+  awk "$smartmatch"'
+  function prpg(fpg) {
+    if (smartmatch(fpg, spath))
+      return
+    spath[++x] = fpg
+    for (y in spath)
+      printf spath[y] (y==x ? RS : " > ")
+    if (reqs[fpg][1])
+      for (each in reqs[fpg])
+        prpg(reqs[fpg][each])
+    delete spath[x--]
+  }
+  FILENAME ~ ARGV[1] {
+    z[$0]
+  }
+  FILENAME ~ ARGV[2] {
+    if ($1 == "@")
       apg = $2
-    }
-    $1 == "requires:" {
-      for (z=2; z<=NF; z++)
-        reqs[apg][z-1] = $z
-    }
-    END {
-      prpg(ENVIRON["pkg"])
-    }
-    function smartmatch(small, large,    values) {
-      for (each in large)
-        values[large[each]]
-      return small in values
-    }
-    function prpg(fpg) {
-      if (smartmatch(fpg, spath)) return
-      spath[length(spath)+1] = fpg
-      print join(spath, 1, length(spath), " > ")
-      if (isarray(reqs[fpg]))
-        for (each in reqs[fpg])
-          prpg(reqs[fpg][each])
-      delete spath[length(spath)]
-    }
-    ' setup.ini
-  done
+    if ($1 == "requires:")
+      for (y=2; y<=NF; y++)
+        reqs[apg][y-1] = $y
+  }
+  END {
+    for (y in z)
+      prpg(y)
+  }
+  ' /etc/setup/targets.db setup.ini
 }
 
 _rdepends() {
+  if no_targets
+  then
+    return
+  fi
   find_workspace
-  for pkg in "${pks[@]}"
-  do
-    awk '
-    @include "join"
-    $1 == "@" {
+  awk "$smartmatch"'
+  function prpg(fpg) {
+    if (smartmatch(fpg, spath))
+      return
+    spath[++ju] = fpg
+    for (ki in spath)
+      printf spath[ki] (ki==ju ? RS : " < ")
+    if (reqs[fpg][1])
+      for (each in reqs[fpg])
+        prpg(reqs[fpg][each])
+    delete spath[ju--]
+  }
+  FILENAME ~ ARGV[1] {
+    li = $0
+  }
+  FILENAME ~ ARGV[2] {
+    if ($1 == "@")
       apg = $2
-    }
-    $1 == "requires:" {
-      for (z=2; z<=NF; z++)
-        reqs[$z][length(reqs[$z])+1] = apg
-    }
-    END {
-      prpg(ENVIRON["pkg"])
-    }
-    function smartmatch(small, large,    values) {
-      for (each in large)
-        values[large[each]]
-      return small in values
-    }
-    function prpg(fpg) {
-      if (smartmatch(fpg, spath)) return
-      spath[length(spath)+1] = fpg
-      print join(spath, 1, length(spath), " < ")
-      if (isarray(reqs[fpg]))
-        for (each in reqs[fpg])
-          prpg(reqs[fpg][each])
-      delete spath[length(spath)]
-    }
-    ' setup.ini
-  done
+    if ($1 == "requires:")
+      for (mi=2; mi<=NF; mi++)
+        reqs[$mi][++no[$mi]] = apg
+  }
+  END {
+    prpg(li)
+  }
+  ' /etc/setup/targets.db setup.ini
 }
 
 _download() {
-  check_packages
+  if no_targets
+  then
+    return
+  fi
   find_workspace
-  local pkg sbq
-  for pkg in "${pks[@]}"
-  do
-    if [ "$sbq" ]
-    then
-      echo
-    else
-      sbq=1
-    fi
-    download "$pkg"
-  done
+  read pkg </etc/setup/targets.db
+  download "$pkg"
 }
 
 download() {
@@ -387,29 +382,28 @@ download() {
 }
 
 _search() {
-  check_packages
+  if no_targets
+  then
+    return
+  fi
   echo Searching downloaded packages...
-  for pkg in "${pks[@]}"
+  for manifest in /etc/setup/*.lst.gz
   do
-    for manifest in /etc/setup/*.lst.gz
-    do
-      if gzip -cd $manifest | grep -q "$pkg"
-      then
-        package=$(echo "$manifest" | sed 's,/etc/setup/,,; s,.lst.gz,,')
-        echo $package
-      fi
-    done
-  done
+    if gzip -cd $manifest | grep -q -f /etc/setup/targets.db
+    then
+      echo $manifest
+    fi
+  done | awk '$0=$4' FS='[./]'
 }
 
 _searchall() {
-  rsc=$(awk '
-  BEGIN {
-    printf "cygwin.com/cgi-bin2/package-grep.cgi?text=1&arch=%s&grep=%s",
-    ARGV[1], ARGV[2]
-  }
-  ' $arch $pks)
-  wget -O /tmp/matches "$rsc"
+  if no_targets
+  then
+    return
+  fi
+  read pks </etc/setup/targets.db
+  wget -O /tmp/matches \
+    'cygwin.com/cgi-bin2/package-grep.cgi?text=1&arch='$arch'&grep='$pks
   awk '
   NR == 1 {next}
   mc[$1]++ {next}
@@ -420,10 +414,13 @@ _searchall() {
 }
 
 _install() {
-  check_packages
+  if no_targets
+  then
+    return
+  fi
   find_workspace
   local pkg dn bn requires sbq script
-  for pkg in "${pks[@]}"
+  while read pkg
   do
 
   if awk '
@@ -499,14 +496,17 @@ _install() {
   done
   echo Package $pkg installed
 
-  done
+  done </etc/setup/targets.db
 }
 
 _remove() {
-  check_packages
+  if no_targets
+  then
+    return
+  fi
   cd /etc
   cygcheck awk bash bunzip2 grep gzip mv sed tar xz > setup/essential.lst
-  for pkg in "${pks[@]}"
+  while read pkg
   do
 
   if ! grep -q "^$pkg " setup/installed.db
@@ -539,15 +539,13 @@ _remove() {
       preremove/"$pkg".sh
       rm preremove/"$pkg".sh
     fi
-    mapfile dt < setup/"$pkg".lst
-    for each in ${dt[*]}
+    while read each
     do
-      [ -f /$each ] && rm /$each
-    done
-    for each in ${dt[*]}
-    do
-      [ -d /$each ] && rmdir --i /$each
-    done
+      if [ -f /$each ]
+      then
+        rm /$each
+      fi
+    done < setup/"$pkg".lst
     rm -f setup/"$pkg".lst.gz postinstall/"$pkg".sh.done
     awk -i inplace '$1 != ENVIRON["pkg"]' setup/installed.db
     echo Package $pkg removed
@@ -559,7 +557,7 @@ _remove() {
     exit 1
   fi
 
-  done
+  done </etc/setup/targets.db
 }
 
 _mirror() {
@@ -606,10 +604,7 @@ _cache() {
   fi
 }
 
-if [ -p /dev/stdin ]
-then
-  mapfile -t pks
-fi
+> /etc/setup/targets.db
 
 # process options
 until [ $# = 0 ]
@@ -638,17 +633,12 @@ do
 
     list | cache  | remove | depends | listall  | download | listfiles |\
     show | mirror | search | install | category | rdepends | searchall )
-      if [ "$command" ]
-      then
-        pks+=("$1")
-      else
-        command=$1
-      fi
+      command=$1
       shift
     ;;
 
     *)
-      pks+=("$1")
+      echo "$1" >> /etc/setup/targets.db
       shift
     ;;
 
