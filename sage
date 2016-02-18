@@ -561,6 +561,49 @@ _remove() {
   done </etc/setup/targets.db
 }
 
+_autoremove() {
+  find-workspace
+  awk '
+  NR == 1 {
+    next
+  }
+  NR == FNR {
+    score[$1] = $3 ? 0 : 1
+    next
+  }
+  $1 == "@" {
+    aph = $2
+  }
+  $1 == "category:" {
+    if (/ Base/)
+      if (aph in score)
+        score[aph]++
+  }
+  $1 == "requires:" {
+    for (z=2; z<=NF; z++)
+      req[aph][$z]
+  }
+  END {
+    for (brv in req)
+      if (brv in score)
+        for (cha in req[brv])
+          score[cha]++
+    while (! done) {
+      done=1
+      for (det in score)
+        if (! score[det]) {
+          done=0
+          print det
+          delete score[det]
+          if (isarray(req[det]))
+            for (ech in req[det])
+              score[ech]--
+        }
+    }
+  }
+  ' /etc/setup/installed.db setup.ini | sage remove
+}
+
 _mirror() {
   if [ "$pks" ]
   then
