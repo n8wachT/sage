@@ -632,18 +632,19 @@ _mirror() {
 }
 
 _cache() {
-  if [ "$pks" ]
+  if [ -s /etc/setup/targets.db ]
   then
-    xr=$(cygpath -aw "$pks")
+    xr=$(cygpath -awf /etc/setup/targets.db)
     ya=$(echo "$xr" | sed 's \\ \\\\ g')
-    awk -i inplace '
+    awk '
     1
     /last-cache/ {
       getline
       print "\t" ya
     }
-    ' ya="$ya" /etc/setup/setup.rc
-    echo "Cache set to ‘$xr’"
+    ' ya="$ya" /etc/setup/setup.rc > /tmp/setup.rc
+    mv /tmp/setup.rc /etc/setup/setup.rc
+    sed 'iCache set to' /etc/setup/targets.db
   else
     awk '
     /last-cache/ {
