@@ -605,16 +605,22 @@ _autoremove() {
 }
 
 _mirror() {
-  if [ "$pks" ]
+  if [ -s /etc/setup/targets.db ]
   then
-    awk -i inplace '
-    1
-    /last-mirror/ {
-      getline
-      print "\t" pks
+    awk '
+    FILENAME ~ ARGV[1] {
+      pks = $0
     }
-    ' pks="$pks" /etc/setup/setup.rc
-    echo Mirror set to "$pks".
+    FILENAME ~ ARGV[2] {
+      print
+      if (/last-mirror/) {
+        getline
+        print "\t" pks
+      }
+    }
+    ' /etc/setup/targets.db /etc/setup/setup.rc > /tmp/setup.rc
+    mv /tmp/setup.rc /etc/setup/setup.rc
+    sed 'iMirror set to' /etc/setup/targets.db
   else
     awk '
     /last-mirror/ {
