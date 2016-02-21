@@ -104,7 +104,7 @@ find_workspace() {
   $1 == "last-cache" {
     print $2
   }
-  ' /etc/setup/setup.rc)
+  ' /etc/setup/setup.rc | cygpath -f-)
 
   mirror=$(awk '
   /last-mirror/ {
@@ -378,7 +378,6 @@ download() {
 
   tar tf $bn | gzip > /etc/setup/"$pkg".lst.gz
   cd "$OLDPWD"
-  mv desc "$cache/$mirrordir/$dn"
   echo $dn $bn > /tmp/dwn
 }
 
@@ -420,39 +419,40 @@ _install() {
     return
   fi
   find_workspace
-  local pkg dn bn requires sbq script
-  while read pkg
-  do
-
-  if awk '
+  local pkg dn bn script
+  if [ $nodeps ]
+  then
+    cat /etc/setup/targets.db
+  else
+    _depends
+  fi |
+  awk '
   function e(file) {
     return getline < file < 0 ? 0 : 1
   }
-  $1 == "@" {
-    br = $2
+  FILENAME == ARGV[1] {
+    ch[$NF]
   }
-  $1 == "install:" && br == ch {
-    exit e("../" $2) && e("/etc/setup/" ch ".lst.gz") ? 0 : 1
+  FILENAME == ARGV[2] {
+    if ($1 == "@") {
+      br = $2
+    }
+    if ($1 == "install:" && br in ch) {
+      delete ch[br]
+      de = $2
+      if (e("../" de) && e("/etc/setup/" br ".lst.gz"))
+        next
+      print br
+    }
   }
-  ' ch=$pkg setup.ini
-  then
-    echo Package $pkg up to date, skipping
-    continue
-  fi
-  if [ "$sbq" ]
-  then
-    echo
-  else
-    sbq=1
-  fi
+  ' - setup.ini |
+  while read pkg
+  do
   echo Installing $pkg
-
   download $pkg
   read dn bn </tmp/dwn
   echo Unpacking...
-
-  cd "$cache/$mirrordir/$dn"
-  tar -x -C / -f $bn
+  tar -x -C / -f "$cache/$mirrordir/$dn/$bn"
   # update the package database
 
   awk '
@@ -468,36 +468,14 @@ _install() {
   mv /etc/setup/installed.db /etc/setup/installed.db-save
   mv /tmp/awk.$$ /etc/setup/installed.db
 
-  if [ "$nodeps" ]
-  then
-    continue
-  fi
-  # recursively install required packages
-
-  requires=$(awk '$1=="requires", $0=$2' FS=': ' desc)
-  cd "$OLDPWD"
-  if [ "$requires" ]
-  then
-    echo Package $pkg requires the following packages, installing:
-    echo $requires
-    sage install --noscripts $requires
-  fi
-
+  done
   # run all postinstall scripts
-
-  if [ "$noscripts" ]
-  then
-    continue
-  fi
   find /etc/postinstall -name '*.sh' | while read script
   do
     echo Running $script
     $script
     mv $script $script.done
   done
-  echo Package $pkg installed
-
-  done </etc/setup/targets.db
 }
 
 _remove() {
@@ -663,11 +641,6 @@ do
 
     --nodeps)
       nodeps=1
-      shift
-    ;;
-
-    --noscripts)
-      noscripts=1
       shift
     ;;
 
