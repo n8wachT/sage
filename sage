@@ -141,7 +141,7 @@ get_setup() {
 }
 
 no_targets() {
-  if [ -s /etc/setup/targets.db ]
+  if [ -s /tmp/alfa.lst ]
   then
     return 1
   else
@@ -177,7 +177,7 @@ _category() {
     if ($1 == "category:" && $0 ~ query)
       print pck
   }
-  ' /etc/setup/targets.db setup.ini
+  ' /tmp/alfa.lst setup.ini
 }
 
 _list() {
@@ -188,7 +188,7 @@ _list() {
   FILENAME ~ ARGV[2] && FNR > 1 && $1 ~ pkg {
     print $1
   }
-  ' /etc/setup/targets.db /etc/setup/installed.db
+  ' /tmp/alfa.lst /etc/setup/installed.db
 }
 
 _listall() {
@@ -208,7 +208,7 @@ _listall() {
   FILENAME ~ ARGV[2] && $1 ~ pkg {
     print $1
   }
-  ' /etc/setup/targets.db setup.ini
+  ' /tmp/alfa.lst setup.ini
 }
 
 _listfiles() {
@@ -217,7 +217,7 @@ _listfiles() {
     return
   fi
   find_workspace
-  read pkg </etc/setup/targets.db
+  read pkg </tmp/alfa.lst
   if [ ! -e /etc/setup/$pkg.lst.gz ]
   then
     download $pkg
@@ -247,7 +247,7 @@ _show() {
     if (! fd)
       print "Unable to locate package " query
   }
-  ' /etc/setup/targets.db setup.ini
+  ' /tmp/alfa.lst setup.ini
 }
 
 smartmatch='
@@ -290,7 +290,7 @@ _depends() {
     for (y in z)
       prpg(y)
   }
-  ' /etc/setup/targets.db setup.ini
+  ' /tmp/alfa.lst setup.ini
 }
 
 _rdepends() {
@@ -324,7 +324,7 @@ _rdepends() {
   END {
     prpg(li)
   }
-  ' /etc/setup/targets.db setup.ini
+  ' /tmp/alfa.lst setup.ini
 }
 
 _download() {
@@ -333,7 +333,7 @@ _download() {
     return
   fi
   find_workspace
-  read pkg </etc/setup/targets.db
+  read pkg </tmp/alfa.lst
   download "$pkg"
 }
 
@@ -389,7 +389,7 @@ _search() {
   echo Searching downloaded packages...
   for manifest in /etc/setup/*.lst.gz
   do
-    if gzip -cd $manifest | grep -q -f /etc/setup/targets.db
+    if gzip -cd $manifest | grep -q -f /tmp/alfa.lst
     then
       echo $manifest
     fi
@@ -401,7 +401,7 @@ _searchall() {
   then
     return
   fi
-  read pks </etc/setup/targets.db
+  read pks </tmp/alfa.lst
   wget -O /tmp/matches \
     'cygwin.com/cgi-bin2/package-grep.cgi?text=1&arch='$arch'&grep='$pks
   awk '
@@ -422,7 +422,7 @@ _install() {
   local pkg dn bn script
   if [ $nodeps ]
   then
-    cat /etc/setup/targets.db
+    cat /tmp/alfa.lst
   else
     _depends
   fi |
@@ -536,7 +536,7 @@ _remove() {
     exit 1
   fi
 
-  done </etc/setup/targets.db
+  done </tmp/alfa.lst
 }
 
 _autoremove() {
@@ -583,7 +583,7 @@ _autoremove() {
 }
 
 _mirror() {
-  if [ -s /etc/setup/targets.db ]
+  if [ -s /tmp/alfa.lst ]
   then
     awk '
     FILENAME ~ ARGV[1] {
@@ -596,9 +596,9 @@ _mirror() {
         print "\t" pks
       }
     }
-    ' /etc/setup/targets.db /etc/setup/setup.rc > /tmp/setup.rc
+    ' /tmp/alfa.lst /etc/setup/setup.rc > /tmp/setup.rc
     mv /tmp/setup.rc /etc/setup/setup.rc
-    sed 'iMirror set to' /etc/setup/targets.db
+    sed 'iMirror set to' /tmp/alfa.lst
   else
     awk '
     /last-mirror/ {
@@ -610,9 +610,9 @@ _mirror() {
 }
 
 _cache() {
-  if [ -s /etc/setup/targets.db ]
+  if [ -s /tmp/alfa.lst ]
   then
-    ya=$(cygpath -awf /etc/setup/targets.db | sed 's \\ \\\\ g')
+    ya=$(cygpath -awf /tmp/alfa.lst | sed 's \\ \\\\ g')
     awk '
     1
     /last-cache/ {
@@ -632,7 +632,7 @@ _cache() {
   fi
 }
 
-> /etc/setup/targets.db
+> /tmp/alfa.lst
 
 # process options
 until [ $# = 0 ]
@@ -661,7 +661,7 @@ do
     ;;
 
     *)
-      echo "$1" >> /etc/setup/targets.db
+      echo "$1" >> /tmp/alfa.lst
       shift
     ;;
 
