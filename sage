@@ -217,12 +217,14 @@ _listfiles() {
     return
   fi
   find_workspace
-  read pkg </tmp/alfa.lst
-  if [ ! -e /etc/setup/$pkg.lst.gz ]
-  then
-    download $pkg
-  fi
-  gzip -cd /etc/setup/$pkg.lst.gz
+  while read pkg
+  do
+    if [ ! -e /etc/setup/$pkg.lst.gz ]
+    then
+      download $pkg
+    fi
+    gzip -cd /etc/setup/$pkg.lst.gz
+  done </tmp/alfa.lst
 }
 
 _show() {
@@ -333,8 +335,10 @@ _download() {
     return
   fi
   find_workspace
-  read pkg </tmp/alfa.lst
-  download "$pkg"
+  while read pkg
+  do
+    download "$pkg"
+  done </tmp/alfa.lst
 }
 
 download() {
@@ -401,16 +405,18 @@ _searchall() {
   then
     return
   fi
-  read pks </tmp/alfa.lst
-  wget -O /tmp/matches \
+  while read pks
+  do
+    wget -O /tmp/matches \
     'cygwin.com/cgi-bin2/package-grep.cgi?text=1&arch='$arch'&grep='$pks
-  awk '
-  NR == 1 {next}
-  mc[$1]++ {next}
-  /-debuginfo-/ {next}
-  /^cygwin32-/ {next}
-  {print $1}
-  ' FS=-[[:digit:]] /tmp/matches
+    awk '
+    NR == 1 {next}
+    mc[$1]++ {next}
+    /-debuginfo-/ {next}
+    /^cygwin32-/ {next}
+    {print $1}
+    ' FS=-[[:digit:]] /tmp/matches
+  done </tmp/alfa.lst
 }
 
 _install() {
