@@ -96,33 +96,30 @@ find_workspace() {
   # default working directory and mirror
   
   # work wherever setup worked last, if possible
-  cache=$(awk '
+  awk '
   BEGIN {
     RS = "\n\\<"
     FS = "\n\t"
   }
   $1 == "last-cache" {
-    print $2
+    si = $2
   }
-  ' /etc/setup/setup.rc | cygpath -f-)
-
-  mirror=$(awk '
-  /last-mirror/ {
-    getline
-    print $1
+  $1 == "last-mirror" {
+    ta = $2
+    gsub("/", "%2f", $2)
+    gsub(":", "%3a", $2)
+    un = $2
   }
-  ' /etc/setup/setup.rc)
-  mirrordir=$(echo "$mirror" | sed 's./.%2f.g; s.:.%3a.g')
-
-  mkdir -p "$cache/$mirrordir/$arch"
-  cd "$cache/$mirrordir/$arch"
-  if [ -e setup.ini ]
-  then
-    return 0
-  else
-    get_setup
-    return 1
-  fi
+  END {
+    print ta
+    print si "/" un
+  }
+  ' /etc/setup/setup.rc > /tmp/fin.lst
+  for each in mirror cache
+  do
+    read -r $each
+  done < /tmp/fin.lst
+  cd "$cache/$arch"
 }
 
 get_setup() {
@@ -372,8 +369,8 @@ download() {
    32) hash=md5sum    ;;
   128) hash=sha512sum ;;
   esac
-  mkdir -p "$cache/$mirrordir/$dn"
-  cd "$cache/$mirrordir/$dn"
+  mkdir -p "$cache/$dn"
+  cd "$cache/$dn"
   if ! test -e $bn || ! echo "$digest $bn" | $hash -c
   then
     wget -O $bn $mirror/$dn/$bn
@@ -458,7 +455,7 @@ _install() {
   download $pkg
   read dn bn </tmp/dwn
   echo Unpacking...
-  tar -x -C / -f "$cache/$mirrordir/$dn/$bn"
+  tar -x -C / -f "../$dn/$bn"
   # update the package database
 
   awk '
