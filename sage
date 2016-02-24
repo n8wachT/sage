@@ -397,6 +397,28 @@ _search() {
   done | awk '$0=$4' FS='[./]'
 }
 
+resolve_deps() {
+  awk '
+  function e(file) {
+    return getline < file < 0 ? 0 : 1
+  }
+  FILENAME == ARGV[1] {
+    ch[$NF]
+  }
+  FILENAME == ARGV[2] {
+    if ($1 == "@")
+      br = $2
+    if ($1 == "install:" && br in ch) {
+      delete ch[br]
+      de = $2
+      if (e("../" de) && e("/etc/setup/" br ".lst.gz"))
+        next
+      print br
+    }
+  }
+  ' $1 setup.ini
+}
+
 _searchall() {
   if no_targets
   then
@@ -429,26 +451,7 @@ _install() {
   else
     _depends
   fi |
-  awk '
-  function e(file) {
-    return getline < file < 0 ? 0 : 1
-  }
-  FILENAME == ARGV[1] {
-    ch[$NF]
-  }
-  FILENAME == ARGV[2] {
-    if ($1 == "@") {
-      br = $2
-    }
-    if ($1 == "install:" && br in ch) {
-      delete ch[br]
-      de = $2
-      if (e("../" de) && e("/etc/setup/" br ".lst.gz"))
-        next
-      print br
-    }
-  }
-  ' - setup.ini |
+  resolve_deps - |
   while read pkg
   do
   echo Installing $pkg
