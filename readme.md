@@ -71,4 +71,4 @@ Sage is a simple script. To install:
 
 Example use of Sage:
 
-    sage install nano
+    sage install make
