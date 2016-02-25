@@ -347,7 +347,7 @@ download() {
   if [ ! -s desc ]
   then
     echo Unable to locate package $pkg
-    exit 1
+    return 1
   fi
 
   # download and unpack the bz2 or xz file
@@ -357,7 +357,7 @@ download() {
   if [ $# = 0 ]
   then
     echo 'Could not find "install" in package description: obsolete package?'
-    exit 1
+    return 1
   fi
 
   dn=$(dirname $2)
@@ -374,7 +374,7 @@ download() {
   if ! test -e $bn || ! echo "$digest $bn" | $hash -c
   then
     wget -O $bn $mirror/$dn/$bn
-    echo "$digest $bn" | $hash -c || exit
+    echo "$digest $bn" | $hash -c || return
   fi
 
   tar tf $bn | gzip > /etc/setup/"$pkg".lst.gz
@@ -503,7 +503,7 @@ _remove() {
     if [ ! -e setup/"$pkg".lst.gz ]
     then
       warn Package manifest missing, cannot remove $pkg. Exiting
-      exit 1
+      return 1
     fi
     gzip -dk setup/"$pkg".lst.gz
     awk '
@@ -539,7 +539,7 @@ _remove() {
     if [ $esn = 1 ]
     then
       warn Sage cannot remove package $pkg, exiting
-      exit 1
+      return 1
     fi
 
   done </tmp/alfa.lst
