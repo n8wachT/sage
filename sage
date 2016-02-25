@@ -454,25 +454,25 @@ _install() {
   resolve_deps - |
   while read pkg
   do
-  echo Installing $pkg
-  download $pkg
-  read dn bn </tmp/dwn
-  echo Unpacking...
-  tar -x -C / -f "../$dn/$bn"
-  # update the package database
+    echo Installing $pkg
+    download $pkg
+    read dn bn </tmp/dwn
+    echo Unpacking...
+    tar -x -C / -f "../$dn/$bn"
+    # update the package database
 
-  awk '
-  ins != 1 && pkg < $1 {
-    print pkg, bz, 0
-    ins = 1
-  }
-  1
-  END {
-    if (ins != 1) print pkg, bz, 0
-  }
-  ' pkg="$pkg" bz=$bn /etc/setup/installed.db > /tmp/awk.$$
-  mv /etc/setup/installed.db /etc/setup/installed.db-save
-  mv /tmp/awk.$$ /etc/setup/installed.db
+    awk '
+    ins != 1 && pkg < $1 {
+      print pkg, bz, 0
+      ins = 1
+    }
+    1
+    END {
+      if (ins != 1) print pkg, bz, 0
+    }
+    ' pkg="$pkg" bz=$bn /etc/setup/installed.db > /tmp/awk.$$
+    mv /etc/setup/installed.db /etc/setup/installed.db-save
+    mv /tmp/awk.$$ /etc/setup/installed.db
 
   done
   # run all postinstall scripts
@@ -494,53 +494,53 @@ _remove() {
   while read pkg
   do
 
-  if ! grep -q "^$pkg " setup/installed.db
-  then
-    echo Package $pkg is not installed, skipping
-    continue
-  fi
-
-  if [ ! -e setup/"$pkg".lst.gz ]
-  then
-    warn Package manifest missing, cannot remove $pkg. Exiting
-    exit 1
-  fi
-  gzip -dk setup/"$pkg".lst.gz
-  awk '
-  NR == FNR {
-    if ($NF) ess[$NF]
-    next
-  }
-  $NF in ess {
-    exit 1
-  }
-  ' FS='[/\\\\]' setup/*.lst
-  esn=$?
-  if [ $esn = 0 ]
-  then
-    echo Removing $pkg
-    if [ -e preremove/"$pkg".sh ]
+    if ! grep -q "^$pkg " setup/installed.db
     then
-      preremove/"$pkg".sh
-      rm preremove/"$pkg".sh
+      echo Package $pkg is not installed, skipping
+      continue
     fi
-    while read each
-    do
-      if [ -f /$each ]
+
+    if [ ! -e setup/"$pkg".lst.gz ]
+    then
+      warn Package manifest missing, cannot remove $pkg. Exiting
+      exit 1
+    fi
+    gzip -dk setup/"$pkg".lst.gz
+    awk '
+    NR == FNR {
+      if ($NF) ess[$NF]
+      next
+    }
+    $NF in ess {
+      exit 1
+    }
+    ' FS='[/\\\\]' setup/*.lst
+    esn=$?
+    if [ $esn = 0 ]
+    then
+      echo Removing $pkg
+      if [ -e preremove/"$pkg".sh ]
       then
-        rm /$each
+        preremove/"$pkg".sh
+        rm preremove/"$pkg".sh
       fi
-    done < setup/"$pkg".lst
-    rm -f setup/"$pkg".lst.gz postinstall/"$pkg".sh.done
-    awk -i inplace '$1 != ENVIRON["pkg"]' setup/installed.db
-    echo Package $pkg removed
-  fi
-  rm setup/"$pkg".lst
-  if [ $esn = 1 ]
-  then
-    warn Sage cannot remove package $pkg, exiting
-    exit 1
-  fi
+      while read each
+      do
+        if [ -f /$each ]
+        then
+          rm /$each
+        fi
+      done < setup/"$pkg".lst
+      rm -f setup/"$pkg".lst.gz postinstall/"$pkg".sh.done
+      awk -i inplace '$1 != ENVIRON["pkg"]' setup/installed.db
+      echo Package $pkg removed
+    fi
+    rm setup/"$pkg".lst
+    if [ $esn = 1 ]
+    then
+      warn Sage cannot remove package $pkg, exiting
+      exit 1
+    fi
 
   done </tmp/alfa.lst
 }
