@@ -122,21 +122,6 @@ find_workspace() {
   cd "$cache/$arch"
 }
 
-get_setup() {
-  touch setup.ini
-  mv setup.ini setup.ini-save
-  wget -N $mirror/$arch/setup.bz2
-  if [ -e setup.bz2 ]
-  then
-    bunzip2 setup.bz2
-    mv setup setup.ini
-    echo Updated setup.ini
-  else
-    echo Error updating setup.ini, reverting
-    mv setup.ini-save setup.ini
-  fi
-}
-
 no_targets() {
   if [ -s /tmp/alfa.lst ]
   then
@@ -148,10 +133,10 @@ no_targets() {
 }
 
 _update() {
-  if find_workspace
-  then
-    get_setup
-  fi
+  find_workspace
+  wget -N $mirror/$arch/setup.bz2
+  bunzip2 < setup.bz2 > setup.ini
+  echo Updated setup.ini
 }
 
 _category() {
