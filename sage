@@ -86,7 +86,7 @@ wget() {
   then
     command wget "$@"
   else
-    warn wget is not installed, using lynx as fallback
+    echo wget is not installed, using lynx as fallback
     set "${*: -1}"
     lynx -source "$1" > "${1##*/}"
   fi
@@ -145,10 +145,6 @@ no_targets() {
     echo No packages found.
     return 0
   fi
-}
-
-warn() {
-  printf '\033[1;31m%s\033[m\n' "$*" >&2
 }
 
 _update() {
@@ -502,7 +498,7 @@ _remove() {
 
     if [ ! -e setup/"$pkg".lst.gz ]
     then
-      warn Package manifest missing, cannot remove $pkg. Exiting
+      echo Package manifest missing, cannot remove $pkg. Exiting
       return 1
     fi
     gzip -dk setup/"$pkg".lst.gz
@@ -538,7 +534,7 @@ _remove() {
     rm setup/"$pkg".lst
     if [ $esn = 1 ]
     then
-      warn Sage cannot remove package $pkg, exiting
+      echo Sage cannot remove package $pkg, exiting
       return 1
     fi
 
