@@ -451,9 +451,8 @@ _install() {
     END {
       if (ins != 1) print pkg, bz, 0
     }
-    ' pkg="$pkg" bz=$bn /etc/setup/installed.db > /tmp/awk.$$
-    mv /etc/setup/installed.db /etc/setup/installed.db-save
-    mv /tmp/awk.$$ /etc/setup/installed.db
+    ' pkg="$pkg" bz=$bn /etc/setup/installed.db > /tmp/installed.db
+    mv /tmp/installed.db /etc/setup/installed.db
 
   done
   # run all postinstall scripts
