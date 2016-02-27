@@ -123,7 +123,7 @@ find_workspace() {
 }
 
 no_targets() {
-  if [ -s /tmp/alfa.lst ]
+  if [ -s /tmp/tar.lst ]
   then
     return 1
   else
@@ -155,7 +155,7 @@ _category() {
     if ($1 == "category:" && $0 ~ query)
       print pck
   }
-  ' /tmp/alfa.lst setup.ini
+  ' /tmp/tar.lst setup.ini
 }
 
 _list() {
@@ -166,7 +166,7 @@ _list() {
   FILENAME ~ ARGV[2] && FNR > 1 && $1 ~ pkg {
     print $1
   }
-  ' /tmp/alfa.lst /etc/setup/installed.db
+  ' /tmp/tar.lst /etc/setup/installed.db
 }
 
 _listall() {
@@ -186,7 +186,7 @@ _listall() {
   FILENAME ~ ARGV[2] && $1 ~ pkg {
     print $1
   }
-  ' /tmp/alfa.lst setup.ini
+  ' /tmp/tar.lst setup.ini
 }
 
 _listfiles() {
@@ -202,7 +202,7 @@ _listfiles() {
       download $pkg
     fi
     gzip -cd /etc/setup/$pkg.lst.gz
-  done </tmp/alfa.lst
+  done </tmp/tar.lst
 }
 
 _show() {
@@ -227,7 +227,7 @@ _show() {
     if (! fd)
       print "Unable to locate package " query
   }
-  ' /tmp/alfa.lst setup.ini
+  ' /tmp/tar.lst setup.ini
 }
 
 smartmatch='
@@ -270,7 +270,7 @@ _depends() {
     for (y in z)
       prpg(y)
   }
-  ' /tmp/alfa.lst setup.ini
+  ' /tmp/tar.lst setup.ini
 }
 
 _rdepends() {
@@ -304,7 +304,7 @@ _rdepends() {
   END {
     prpg(li)
   }
-  ' /tmp/alfa.lst setup.ini
+  ' /tmp/tar.lst setup.ini
 }
 
 _download() {
@@ -316,7 +316,7 @@ _download() {
   while read pkg
   do
     download "$pkg"
-  done </tmp/alfa.lst
+  done </tmp/tar.lst
 }
 
 download() {
@@ -371,7 +371,7 @@ _search() {
   echo Searching downloaded packages...
   for manifest in /etc/setup/*.lst.gz
   do
-    if gzip -cd $manifest | grep -q -f /tmp/alfa.lst
+    if gzip -cd $manifest | grep -q -f /tmp/tar.lst
     then
       echo $manifest
     fi
@@ -407,7 +407,7 @@ _searchall() {
   fi
   while read pks
   do
-    wget -O /tmp/matches \
+    wget -O /tmp/sra.lst \
     'cygwin.com/cgi-bin2/package-grep.cgi?text=1&arch='$arch'&grep='$pks
     awk '
     NR == 1 {next}
@@ -415,8 +415,8 @@ _searchall() {
     /-debuginfo-/ {next}
     /^cygwin32-/ {next}
     {print $1}
-    ' FS=-[[:digit:]] /tmp/matches
-  done </tmp/alfa.lst
+    ' FS=-[[:digit:]] /tmp/sra.lst
+  done </tmp/tar.lst
 }
 
 _install() {
@@ -428,7 +428,7 @@ _install() {
   local pkg dn bn script
   if [ $nodeps ]
   then
-    cat /tmp/alfa.lst
+    cat /tmp/tar.lst
   else
     _depends
   fi |
@@ -471,7 +471,7 @@ _remove() {
     return
   fi
   cd /etc
-  cygcheck awk bash bunzip2 grep gzip mv sed tar xz > setup/essential.lst
+  cygcheck awk bash bunzip2 grep gzip mv sed tar xz > /tmp/rmv.lst
   while read pkg
   do
 
@@ -495,7 +495,7 @@ _remove() {
     $NF in ess {
       exit 1
     }
-    ' FS='[/\\\\]' setup/*.lst
+    ' FS='[/\\\\]' /tmp/rmv.lst setup/"$pkg".lst
     esn=$?
     if [ $esn = 0 ]
     then
@@ -523,7 +523,7 @@ _remove() {
       return 1
     fi
 
-  done </tmp/alfa.lst
+  done </tmp/tar.lst
 }
 
 _autoremove() {
@@ -570,7 +570,7 @@ _autoremove() {
 }
 
 _mirror() {
-  if [ -s /tmp/alfa.lst ]
+  if [ -s /tmp/tar.lst ]
   then
     awk '
     FILENAME ~ ARGV[1] {
@@ -583,9 +583,9 @@ _mirror() {
         print "\t" pks
       }
     }
-    ' /tmp/alfa.lst /etc/setup/setup.rc > /tmp/setup.rc
+    ' /tmp/tar.lst /etc/setup/setup.rc > /tmp/setup.rc
     mv /tmp/setup.rc /etc/setup/setup.rc
-    sed 'iMirror set to' /tmp/alfa.lst
+    sed 'iMirror set to' /tmp/tar.lst
   else
     awk '
     /last-mirror/ {
@@ -597,9 +597,9 @@ _mirror() {
 }
 
 _cache() {
-  if [ -s /tmp/alfa.lst ]
+  if [ -s /tmp/tar.lst ]
   then
-    ya=$(cygpath -awf /tmp/alfa.lst | sed 's \\ \\\\ g')
+    ya=$(cygpath -awf /tmp/tar.lst | sed 's \\ \\\\ g')
     awk '
     1
     /last-cache/ {
@@ -619,7 +619,7 @@ _cache() {
   fi
 }
 
-> /tmp/alfa.lst
+> /tmp/tar.lst
 
 # process options
 until [ $# = 0 ]
@@ -636,19 +636,14 @@ do
       exit
     ;;
 
-    update)
-      command=$1
-      shift
-    ;;
-
-    list | cache  | remove | depends | listall  | download | listfiles |\
-    show | mirror | search | install | category | rdepends | searchall )
+    cache | category | depends | download | install | list | listall | \
+    listfiles | mirror | rdepends | remove | search | searchall | show | update)
       command=$1
       shift
     ;;
 
     *)
-      echo "$1" >> /tmp/alfa.lst
+      echo "$1" >> /tmp/tar.lst
       shift
     ;;
 
