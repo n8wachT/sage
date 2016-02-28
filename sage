@@ -473,15 +473,9 @@ _remove() {
   while read pkg
   do
 
-    if ! grep -q "^$pkg " setup/installed.db
-    then
-      echo Package $pkg is not installed, skipping
-      continue
-    fi
-
     if [ ! -e setup/"$pkg".lst.gz ]
     then
-      echo Package manifest missing, cannot remove $pkg
+      echo Package $pkg is not installed, skipping
       continue
     fi
     gzip -dk setup/"$pkg".lst.gz
