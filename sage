@@ -125,10 +125,9 @@ find_workspace() {
 no_targets() {
   if [ -s /tmp/tar.lst ]
   then
-    return 1
+    false
   else
     echo No packages found.
-    return 0
   fi
 }
 
@@ -328,7 +327,7 @@ download() {
   if [ ! -s desc ]
   then
     echo Unable to locate package $pkg
-    return 1
+    return
   fi
 
   # download and unpack the bz2 or xz file
@@ -338,7 +337,7 @@ download() {
   if [ $# = 0 ]
   then
     echo 'Could not find "install" in package description: obsolete package?'
-    return 1
+    return
   fi
 
   dn=$(dirname $2)
@@ -482,8 +481,8 @@ _remove() {
 
     if [ ! -e setup/"$pkg".lst.gz ]
     then
-      echo Package manifest missing, cannot remove $pkg. Exiting
-      return 1
+      echo Package manifest missing, cannot remove $pkg
+      continue
     fi
     gzip -dk setup/"$pkg".lst.gz
     awk '
@@ -518,8 +517,8 @@ _remove() {
     rm setup/"$pkg".lst
     if [ $esn = 1 ]
     then
-      echo Sage cannot remove package $pkg, exiting
-      return 1
+      echo cannot remove package $pkg
+      continue
     fi
 
   done </tmp/tar.lst
