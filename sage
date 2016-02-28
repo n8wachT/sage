@@ -505,7 +505,11 @@ _remove() {
         fi
       done < setup/"$pkg".lst
       rm -f setup/"$pkg".lst.gz postinstall/"$pkg".sh.done
-      awk -i inplace '$1 != ENVIRON["pkg"]' setup/installed.db
+      awk '
+      BEGIN {ARGC--}
+      $1 != ARGV[2]
+      ' setup/installed.db $pkg > /tmp/installed.db
+      mv /tmp/installed.db setup/installed.db
       echo Package $pkg removed
     fi
     rm setup/"$pkg".lst
@@ -641,8 +645,6 @@ do
 
   esac
 done
-
-set -a
 
 if [ "$command" ]
 then
