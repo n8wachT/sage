@@ -93,26 +93,30 @@ wget() {
 }
 
 find_workspace() {
-  # default working directory and mirror
-  
-  # work wherever setup worked last, if possible
   awk '
+  function encodeURIComponent(str,   start, j) {
+    for (i = 0; i <= 255; i++)
+      charCodeAt[sprintf("%c", i)] = i
+    while (i = substr(str, ++start, 1))
+      if (i ~ /[[:alnum:]_.~-]/)
+        j = j i
+      else
+        j = j "%" sprintf("%02X", charCodeAt[i])
+    return j
+  }
   BEGIN {
     RS = "\n\\<"
     FS = "\n\t"
   }
   $1 == "last-cache" {
-    si = $2
+    y = $2
   }
   $1 == "last-mirror" {
-    ta = $2
-    gsub("/", "%2f", $2)
-    gsub(":", "%3a", $2)
-    un = $2
+    z = $2
   }
   END {
-    print ta
-    print si "/" un
+    print z
+    print y "/" encodeURIComponent(z)
   }
   ' /etc/setup/setup.rc > /tmp/fin.lst
   for each in mirror cache
