@@ -4,7 +4,7 @@ rel=/Documents/http*/x86_64/release/make/make-4.1-1.tar.xz
 pause() {
   echo 'Press any key to continue . . .'
   read _
-  printf '\033c'
+  printf '\33c'
 }
 
 sage download

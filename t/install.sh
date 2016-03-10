@@ -5,7 +5,7 @@ setup=/etc/setup/make.lst.gz
 pause() {
   echo 'Press any key to continue . . .'
   read _
-  printf '\033c'
+  printf '\33c'
 }
 
 # rel=0 setup=0
