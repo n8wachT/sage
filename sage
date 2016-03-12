@@ -155,8 +155,11 @@ _category() {
   FILENAME ~ ARGV[2] {
     if ($1 == "@")
       pck = $2
-    if ($1 == "category:" && $0 ~ query)
-      print pck
+    if ($1 == "category:")
+      do
+        if ($NF == query)
+          print pck
+      while (--NF)
   }
   ' /tmp/tar.lst setup.ini
 }
