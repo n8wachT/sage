@@ -27,8 +27,8 @@ func wget(url string) {
   fmt.Println(n, "bytes downloaded.")
 }
 
-func bunzip2(alpha string) {
-  bravo, err := os.Open(alpha)
+func bunzip2(alfa string) {
+  bravo, err := os.Open(alfa)
   if err != nil {
     return
   }
