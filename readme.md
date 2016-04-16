@@ -71,3 +71,5 @@ Sage is a simple script. To install:
 Example use of Sage:
 
     sage install make
+
+![logo](http://rawgit.com/svnpenn/sage/master/sage.jpg)
