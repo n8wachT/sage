@@ -341,7 +341,7 @@ download() {
 
   # pick the latest version, which comes first
   set -- $(awk '$1 == "install:"' desc)
-  if [ $# = 0 ]
+  if [ "$#" = 0 ]
   then
     echo 'Could not find "install" in package description: obsolete package?'
     return
@@ -625,7 +625,7 @@ _cache() {
 > /tmp/tar.lst
 
 # process options
-until [ $# = 0 ]
+until [ "$#" = 0 ]
 do
   case "$1" in
 
