@@ -352,7 +352,7 @@ download() {
 
   # check the md5
   digest=$4
-  case "${#digest}" in
+  case ${#digest} in
    32) hash=md5sum    ;;
   128) hash=sha512sum ;;
   esac
@@ -627,7 +627,7 @@ _cache() {
 # process options
 until [ "$#" = 0 ]
 do
-  case "$1" in
+  case $1 in
 
     --nodeps)
       nodeps=1
