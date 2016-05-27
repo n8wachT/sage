@@ -1,4 +1,4 @@
-#!/bin/dash
+#!/bin/dash -e
 #-*-mode:sh-*-
 usage="\
 NAME
