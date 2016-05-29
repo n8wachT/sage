@@ -365,7 +365,7 @@ download() {
   fi
 
   tar tf $bn | gzip > /etc/setup/"$pkg".lst.gz
-  cd "$OLDPWD"
+  cd "$cache/$arch"
   echo $dn $bn > /tmp/dwn
 }
 
