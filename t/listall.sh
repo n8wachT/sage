@@ -1,2 +1,2 @@
-#!/bin/sh
+#!/bin/dash
 sage listall make$

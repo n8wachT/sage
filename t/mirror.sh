@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/dash
 sage mirror alfa
 echo
 sage mirror
