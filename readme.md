@@ -1,5 +1,7 @@
 Cygwin package manager
 ======================
+![logo](http://rawgit.com/svnpenn/sage/master/sage.jpg)
+
 Sage is a Cygwin package manager. It includes a command-line installer for
 Cygwin which cooperates with Cygwin Setup and uses the same repository.
 
@@ -71,5 +73,3 @@ Sage is a simple script. To install:
 Example use of Sage:
 
     sage install make
-
-![logo](//rawgit.com/svnpenn/sage/master/sage.jpg)
