@@ -1,5 +1,5 @@
 #!/bin/dash -e
-#-*-mode:sh-*-
+#-*-sh-*-
 usage="\
 NAME
   Sage - package manager utility
