@@ -411,9 +411,10 @@ _searchall() {
   then
     return
   fi
+  xr=$(mktemp)
   while read pks
   do
-    wget -O /tmp/sra.lst \
+    wget -O "$xr" \
     'cygwin.com/cgi-bin2/package-grep.cgi?text=1&arch='$arch'&grep='$pks
     awk '
     NR == 1 {next}
@@ -421,7 +422,7 @@ _searchall() {
     /-debuginfo-/ {next}
     /^cygwin32-/ {next}
     {print $1}
-    ' FS=-[[:digit:]] /tmp/sra.lst
+    ' FS=-[[:digit:]] "$xr"
   done </tmp/tar.lst
 }
 
