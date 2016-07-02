@@ -636,7 +636,7 @@ do
     ;;
 
     --version)
-      echo 'Sage version 1.5.0'
+      echo 'Sage version 1.5.1'
       exit
     ;;
 
