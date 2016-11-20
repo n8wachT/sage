@@ -507,9 +507,9 @@ _remove() {
       fi
       while read each
       do
-        if [ -f /$each ]
+        if [ -f /"$each" ]
         then
-          rm /$each
+          rm /"$each"
         fi
       done < setup/"$pkg".lst
       rm -f setup/"$pkg".lst.gz postinstall/"$pkg".sh.done
