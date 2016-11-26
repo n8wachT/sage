@@ -656,7 +656,7 @@ done
 
 if [ "$command" ]
 then
-  readonly arch=$(arch | sed s.i6.x.)
+  readonly arch=$(uname -m | sed s.i6.x.)
   _"$command"
 else
   printf "$usage"
