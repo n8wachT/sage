@@ -62,14 +62,18 @@ searchall
   package(s) which contain this file.
 ~~~
 
-Quick start
------------
+Install
+-------
 
-Sage is a simple script. To install:
+1. Click https://raw.githubusercontent.com/svnpenn/sage/master/sage
 
-    lynx -source rawgit.com/svnpenn/sage/master/sage > sage
-    install sage /bin
+2. Click File, Save Page As, Save
 
-Example use of Sage:
+3. `install sage /bin`
 
-    sage install make
+Example
+-------
+
+~~~
+sage install make
+~~~
