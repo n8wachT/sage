@@ -7,9 +7,10 @@ Cygwin which cooperates with Cygwin Setup and uses the same repository.
 
 [![bountysource][api]][www]
 
-[raw]://raw.githubusercontent.com/svnpenn/sage/master/sage.jpg
-[api]://api.bountysource.com/badge/team?team_id=114003&style=raised
-[www]://www.bountysource.com/teams/svnpenn
+<!-- protocol is needed for image to render -->
+[raw]:https://raw.githubusercontent.com/svnpenn/sage/master/sage.jpg
+[api]:https://api.bountysource.com/badge/team?team_id=114003&style=raised
+[www]:https://www.bountysource.com/teams/svnpenn
 
 Operations
 ----------
