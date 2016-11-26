@@ -1,92 +1,12 @@
 #!/bin/dash -e
 # -*- sh -*-
-usage="\
-NAME
-  Sage - package manager utility
-
-SYNOPSIS
-  sage [operation] [options] [targets]
-
-DESCRIPTION
-  Sage is a package management utility that tracks installed packages on a
-  Cygwin system. Invoking Sage involves specifying an operation with any
-  potential options and targets to operate on. A target is usually a package
-  name, file name, URL, or a search string. Targets can be provided as command
-  line arguments.
-
-OPERATIONS
-  install
-    Install package(s).
-
-  remove
-    Remove package(s) from the system.
-
-  update
-    Download a fresh copy of the master package list (setup.ini) from the
-    server defined in setup.rc.
-
-  download
-    Retrieve package(s) from the server, but do not install/upgrade anything.
-
-  show
-    Display information on given package(s).
-
-  depends
-    Produce a dependency tree for a package.
-
-  rdepends
-    Produce a tree of packages that depend on the named package.
-
-  list
-    Search each locally-installed package for names that match regexp. If no
-    package names are provided in the command line, all installed packages will
-    be queried.
-
-  listall
-    This will search each package in the master package list (setup.ini) for
-    names that match regexp.
-
-  category
-    Display all packages that are members of a named category.
-
-  listfiles
-    List all files owned by a given package. Multiple packages can be specified
-    on the command line.
-
-  search
-    Search for downloaded packages that own the specified file(s). The path can
-    be relative or absolute, and one or more files can be specified.
-
-  searchall
-    Search cygwin.com to retrieve file information about packages. The provided
-    target is considered to be a filename and searchall will return the
-    package(s) which contain this file.
-
-  mirror
-    Set the mirror; a full URL to a location where the database, packages, and
-    signatures for this repository can be found. If no URL is provided, display
-    current mirror.
-
-  cache
-    Set the package cache directory. If a file is not found in cache directory,
-    it will be downloaded. Unix and Windows forms are accepted, as well as
-    absolute or regular paths. If no directory is provided, display current
-    cache.
-
-OPTIONS
-  --nodeps
-    Specify this option to skip all dependency checks.
-
-  --version
-    Display version and exit.
-"
 
 wget() {
   if command wget -h 2>&1 >/dev/null
   then
     command wget "$@"
   else
-    echo wget is not installed, using lynx as fallback
+    echo 'wget is not installed, using lynx as fallback'
     set "${*: -1}"
     lynx -source "$1" > "${1##*/}"
   fi
@@ -121,9 +41,9 @@ find_workspace() {
   ' /etc/setup/setup.rc > /tmp/fin.lst
   for each in mirror cache
   do
-    read -r $each
+    read -r "$each"
   done < /tmp/fin.lst
-  cd "$cache/$arch"
+  cd "$cache"/"$arch"
 }
 
 no_targets() {
@@ -131,15 +51,15 @@ no_targets() {
   then
     false
   else
-    echo No packages found.
+    echo 'No packages found.'
   fi
 }
 
 _update() {
   find_workspace
-  wget -N $mirror/$arch/setup.bz2
+  wget -N "$mirror"/"$arch"/setup.bz2
   bunzip2 < setup.bz2 > setup.ini
-  echo Updated setup.ini
+  echo 'Updated setup.ini'
 }
 
 _category() {
@@ -203,11 +123,11 @@ _listfiles() {
   find_workspace
   while read pkg
   do
-    if [ ! -e /etc/setup/$pkg.lst.gz ]
+    if [ ! -e /etc/setup/"$pkg".lst.gz ]
     then
-      download $pkg
+      download "$pkg"
     fi
-    gzip -cd /etc/setup/$pkg.lst.gz
+    gzip -cd /etc/setup/"$pkg".lst.gz
   done </tmp/tar.lst
 }
 
@@ -330,10 +250,10 @@ download() {
   pkg=$1
   # look for package and save desc file
 
-  awk '$1 == pc' RS='\n\n@ ' FS='\n' pc=$pkg setup.ini > desc
+  awk '$1 == pc' RS='\n\n@ ' FS='\n' pc="$pkg" setup.ini > desc
   if [ ! -s desc ]
   then
-    echo Unable to locate package $pkg
+    echo 'Unable to locate package' "$pkg"
     return
   fi
 
@@ -347,8 +267,8 @@ download() {
     return
   fi
 
-  dn=$(dirname $2)
-  bn=$(basename $2)
+  dn=$(dirname "$2")
+  bn=$(basename "$2")
 
   # check the md5
   digest=$4
@@ -356,17 +276,17 @@ download() {
    32) hash=md5sum    ;;
   128) hash=sha512sum ;;
   esac
-  mkdir -p "$cache/$dn"
-  cd "$cache/$dn"
-  if ! test -e $bn || ! echo "$digest $bn" | $hash -c
+  mkdir -p "$cache"/"$dn"
+  cd "$cache"/"$dn"
+  if ! test -e "$bn" || ! echo "$digest" "$bn" | "$hash" -c
   then
-    wget -O $bn $mirror/$dn/$bn
-    echo "$digest $bn" | $hash -c || return
+    wget -O "$bn" "$mirror"/"$dn"/"$bn"
+    echo "$digest" "$bn" | "$hash" -c || return
   fi
 
-  tar tf $bn | gzip > /etc/setup/"$pkg".lst.gz
-  cd "$cache/$arch"
-  echo $dn $bn > /tmp/dwn
+  tar tf "$bn" | gzip > /etc/setup/"$pkg".lst.gz
+  cd "$cache"/"$arch"
+  echo "$dn" "$bn" > /tmp/dwn
 }
 
 _search() {
@@ -374,12 +294,12 @@ _search() {
   then
     return
   fi
-  echo Searching downloaded packages...
+  echo 'Searching downloaded packages...'
   for manifest in /etc/setup/*.lst.gz
   do
-    if gzip -cd $manifest | grep -q -f /tmp/tar.lst
+    if gzip -cd "$manifest" | grep -q -f /tmp/tar.lst
     then
-      echo $manifest
+      echo "$manifest"
     fi
   done | awk '$0=$4' FS='[./]'
 }
@@ -403,7 +323,7 @@ resolve_deps() {
       print br
     }
   }
-  ' $1 setup.ini
+  ' "$1" setup.ini
 }
 
 _searchall() {
@@ -415,7 +335,7 @@ _searchall() {
   while read pks
   do
     wget -O "$xr" \
-    'cygwin.com/cgi-bin2/package-grep.cgi?text=1&arch='$arch'&grep='$pks
+    'cygwin.com/cgi-bin2/package-grep.cgi?text=1&arch='"$arch"'&grep='"$pks"
     awk '
     NR == 1 {next}
     mc[$1]++ {next}
@@ -433,7 +353,7 @@ _install() {
   fi
   find_workspace
   local pkg dn bn script
-  if [ $nodeps ]
+  if [ "$nodeps" ]
   then
     cat /tmp/tar.lst
   else
@@ -442,11 +362,11 @@ _install() {
   resolve_deps - |
   while read pkg
   do
-    echo Installing $pkg
-    download $pkg
+    echo 'Installing' "$pkg"
+    download "$pkg"
     read dn bn </tmp/dwn
-    echo Unpacking...
-    tar -x -C / -f "../$dn/$bn"
+    echo 'Unpacking...'
+    tar -x -C / -f ../"$dn"/"$bn"
     # update the package database
 
     awk '
@@ -458,16 +378,16 @@ _install() {
     END {
       if (ins != 1) print pkg, bz, 0
     }
-    ' pkg="$pkg" bz=$bn /etc/setup/installed.db > /tmp/installed.db
+    ' pkg="$pkg" bz="$bn" /etc/setup/installed.db > /tmp/installed.db
     mv /tmp/installed.db /etc/setup/installed.db
 
   done
   # run all postinstall scripts
   find /etc/postinstall -name '*.sh' | while read script
   do
-    echo Running $script
-    $script
-    mv $script $script.done
+    echo 'Running' "$script"
+    "$script"
+    mv "$script" "$script".done
   done
 }
 
@@ -483,7 +403,7 @@ _remove() {
 
     if [ ! -e setup/"$pkg".lst.gz ]
     then
-      echo Package $pkg is not installed, skipping
+      echo "$pkg" 'package is not installed, skipping'
       continue
     fi
     gzip -dk setup/"$pkg".lst.gz
@@ -497,9 +417,9 @@ _remove() {
     }
     ' FS='[/\\\\]' /tmp/rmv.lst setup/"$pkg".lst
     esn=$?
-    if [ $esn = 0 ]
+    if [ "$esn" = 0 ]
     then
-      echo Removing $pkg
+      echo 'Removing' "$pkg"
       if [ -e preremove/"$pkg".sh ]
       then
         preremove/"$pkg".sh
@@ -516,14 +436,14 @@ _remove() {
       awk '
       BEGIN {ARGC--}
       $1 != ARGV[2]
-      ' setup/installed.db $pkg > /tmp/installed.db
+      ' setup/installed.db "$pkg" > /tmp/installed.db
       mv /tmp/installed.db setup/installed.db
-      echo Package $pkg removed
+      echo "$pkg" 'package removed'
     fi
     rm setup/"$pkg".lst
-    if [ $esn = 1 ]
+    if [ "$esn" = 1 ]
     then
-      echo cannot remove package $pkg
+      echo 'cannot remove package' "$pkg"
       continue
     fi
 
@@ -612,7 +532,7 @@ _cache() {
     }
     ' ya="$ya" /etc/setup/setup.rc > /tmp/setup.rc
     mv /tmp/setup.rc /etc/setup/setup.rc
-    echo "Cache set to $ya"
+    echo 'Cache set to' "$ya"
   else
     awk '
     /last-cache/ {
@@ -659,5 +579,84 @@ then
   readonly arch=$(uname -m | sed s.i6.x.)
   _"$command"
 else
-  printf "$usage"
+  cat <<'zu'
+NAME
+  Sage - package manager utility
+
+SYNOPSIS
+  sage [operation] [options] [targets]
+
+DESCRIPTION
+  Sage is a package management utility that tracks installed packages on a
+  Cygwin system. Invoking Sage involves specifying an operation with any
+  potential options and targets to operate on. A target is usually a package
+  name, file name, URL, or a search string. Targets can be provided as command
+  line arguments.
+
+OPERATIONS
+  install
+    Install package(s).
+
+  remove
+    Remove package(s) from the system.
+
+  update
+    Download a fresh copy of the master package list (setup.ini) from the
+    server defined in setup.rc.
+
+  download
+    Retrieve package(s) from the server, but do not install/upgrade anything.
+
+  show
+    Display information on given package(s).
+
+  depends
+    Produce a dependency tree for a package.
+
+  rdepends
+    Produce a tree of packages that depend on the named package.
+
+  list
+    Search each locally-installed package for names that match regexp. If no
+    package names are provided in the command line, all installed packages will
+    be queried.
+
+  listall
+    This will search each package in the master package list (setup.ini) for
+    names that match regexp.
+
+  category
+    Display all packages that are members of a named category.
+
+  listfiles
+    List all files owned by a given package. Multiple packages can be specified
+    on the command line.
+
+  search
+    Search for downloaded packages that own the specified file(s). The path can
+    be relative or absolute, and one or more files can be specified.
+
+  searchall
+    Search cygwin.com to retrieve file information about packages. The provided
+    target is considered to be a filename and searchall will return the
+    package(s) which contain this file.
+
+  mirror
+    Set the mirror; a full URL to a location where the database, packages, and
+    signatures for this repository can be found. If no URL is provided, display
+    current mirror.
+
+  cache
+    Set the package cache directory. If a file is not found in cache directory,
+    it will be downloaded. Unix and Windows forms are accepted, as well as
+    absolute or regular paths. If no directory is provided, display current
+    cache.
+
+OPTIONS
+  --nodeps
+    Specify this option to skip all dependency checks.
+
+  --version
+    Display version and exit.
+zu
 fi
