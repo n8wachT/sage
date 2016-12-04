@@ -1,2 +1,2 @@
 #!/bin/dash
-ln -sf "$PWD"/sage /usr/local/bin
+ln -sf "$PWD"/sage "$PWD"/spy.sh /usr/local/bin
