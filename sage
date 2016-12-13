@@ -132,27 +132,15 @@ _listfiles() {
 }
 
 _show() {
-  if no_targets
-  then
-    return
-  fi
   find_workspace
   awk '
-  BEGIN {
-    RS = "\n\n@ "
-    FS = "\n"
+  FILENAME == ARGV[1] {
+    x[$0]
   }
-  FILENAME ~ ARGV[1] {
-    query = $1
+  FILENAME == ARGV[2] && $1 == "@" {
+    y = $2 in x ? 1 : 0
   }
-  FILENAME ~ ARGV[2] && $1 == query {
-    print
-    fd++
-  }
-  END {
-    if (! fd)
-      print "Unable to locate package " query
-  }
+  y
   ' /tmp/tar.lst setup.ini
 }
 
