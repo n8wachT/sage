@@ -8,7 +8,6 @@ if [ ! -e /tmp/mirrors.lst ]
 then
   wget -O /tmp/mirrors.lst cygwin.com/mirrors.lst
 fi
-export POSIXLY_CORRECT=1
 awk '
 function dom(url,   a, b, c, d) {
   split(url, a, "/")
