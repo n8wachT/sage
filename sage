@@ -24,15 +24,13 @@ find_workspace() {
         j = j "%" sprintf("%02X", charCodeAt[i])
     return j
   }
-  BEGIN {
-    RS = "\n\\<"
-    FS = "\n\t"
-  }
   $1 == "last-cache" {
-    y = $2
+    getline
+    y = $1
   }
   $1 == "last-mirror" {
-    z = $2
+    getline
+    z = $1
   }
   END {
     print z
