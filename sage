@@ -563,6 +563,7 @@ done
 if [ "$command" ]
 then
   readonly arch=$(uname -m | sed s.i6.x.)
+  unset POSIXLY_CORRECT
   _"$command"
 else
   cat <<'zu'
