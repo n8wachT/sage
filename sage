@@ -121,7 +121,7 @@ _listfiles() {
   find_workspace
   while read pkg
   do
-    if [ ! -e /etc/setup/"$pkg".lst.gz ]
+    if [ ! -f /etc/setup/"$pkg".lst.gz ]
     then
       download "$pkg"
     fi
@@ -264,7 +264,7 @@ download() {
   esac
   mkdir -p "$cache"/"$dn"
   cd "$cache"/"$dn"
-  if ! test -e "$bn" || ! echo "$digest" "$bn" | "$hash" -c
+  if ! test -f "$bn" || ! echo "$digest" "$bn" | "$hash" -c
   then
     wget -O "$bn" "$mirror"/"$dn"/"$bn"
     echo "$digest" "$bn" | "$hash" -c || return
@@ -387,7 +387,7 @@ _remove() {
   while read pkg
   do
 
-    if [ ! -e setup/"$pkg".lst.gz ]
+    if [ ! -f setup/"$pkg".lst.gz ]
     then
       echo "$pkg" 'package is not installed, skipping'
       continue
@@ -406,7 +406,7 @@ _remove() {
     if [ "$esn" = 0 ]
     then
       echo 'Removing' "$pkg"
-      if [ -e preremove/"$pkg".sh ]
+      if [ -f preremove/"$pkg".sh ]
       then
         preremove/"$pkg".sh
         rm preremove/"$pkg".sh

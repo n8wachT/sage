@@ -4,7 +4,7 @@ then
   echo 'mirror.sh [timeout]'
   exit
 fi
-if [ ! -e /tmp/mirrors.lst ]
+if [ ! -f /tmp/mirrors.lst ]
 then
   wget -O /tmp/mirrors.lst cygwin.com/mirrors.lst
 fi
