@@ -509,7 +509,7 @@ _mirror() {
 _cache() {
   if [ -s /tmp/tar.lst ]
   then
-    ya=$(cygpath -awf /tmp/tar.lst | sed 's \\ \\\\ g')
+    ya=$(cygpath -aiwf /tmp/tar.lst | sed 's \\ \\\\ g')
     awk '
     1
     /last-cache/ {
