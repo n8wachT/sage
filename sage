@@ -566,7 +566,7 @@ then
   unset POSIXLY_CORRECT
   _"$command"
 else
-  cat <<'zu'
+  cat <<'eof'
 NAME
   Sage - package manager utility
 
@@ -645,5 +645,5 @@ OPTIONS
 
   --version
     Display version and exit.
-zu
+eof
 fi
