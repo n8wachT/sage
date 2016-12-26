@@ -156,6 +156,7 @@ _depends() {
     return
   fi
   find_workspace
+  unset POSIXLY_CORRECT
   awk "$smartmatch"'
   function prpg(fpg) {
     if (smartmatch(fpg, spath))
@@ -191,6 +192,7 @@ _rdepends() {
     return
   fi
   find_workspace
+  unset POSIXLY_CORRECT
   awk "$smartmatch"'
   function prpg(fpg) {
     if (smartmatch(fpg, spath))
@@ -438,6 +440,7 @@ _remove() {
 
 _autoremove() {
   find-workspace
+  unset POSIXLY_CORRECT
   awk '
   NR == 1 {
     next
@@ -563,7 +566,6 @@ done
 if [ "$command" ]
 then
   readonly arch=$(uname -m | sed s.i6.x.)
-  unset POSIXLY_CORRECT
   _"$command"
 else
   cat <<'eof'
