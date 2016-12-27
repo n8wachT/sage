@@ -67,10 +67,10 @@ _category() {
   fi
   find_workspace
   awk '
-  FILENAME ~ ARGV[1] {
+  FILENAME == ARGV[1] {
     query = $0
   }
-  FILENAME ~ ARGV[2] {
+  FILENAME == ARGV[2] {
     if ($1 == "@")
       pck = $2
     if ($1 == "category:")
@@ -84,10 +84,10 @@ _category() {
 
 _list() {
   awk '
-  FILENAME ~ ARGV[1] {
+  FILENAME == ARGV[1] {
     pkg = $0
   }
-  FILENAME ~ ARGV[2] && FNR > 1 && $1 ~ pkg {
+  FILENAME == ARGV[2] && FNR > 1 && $1 ~ pkg {
     print $1
   }
   ' /tmp/tar.lst /etc/setup/installed.db
@@ -104,10 +104,10 @@ _listall() {
     RS = "\n\n@ "
     FS = "\n"
   }
-  FILENAME ~ ARGV[1] {
+  FILENAME == ARGV[1] {
     pkg = $1
   }
-  FILENAME ~ ARGV[2] && $1 ~ pkg {
+  FILENAME == ARGV[2] && $1 ~ pkg {
     print $1
   }
   ' /tmp/tar.lst setup.ini
@@ -167,10 +167,10 @@ _depends() {
       prpg(reqs[fpg, each])
     delete spath[x--]
   }
-  FILENAME ~ ARGV[1] {
+  FILENAME == ARGV[1] {
     z[$0]
   }
-  FILENAME ~ ARGV[2] {
+  FILENAME == ARGV[2] {
     if ($1 == "@")
       apg = $2
     if ($1 == "requires:")
@@ -203,10 +203,10 @@ _rdepends() {
         prpg(reqs[fpg][each])
     delete spath[ju--]
   }
-  FILENAME ~ ARGV[1] {
+  FILENAME == ARGV[1] {
     li = $0
   }
-  FILENAME ~ ARGV[2] {
+  FILENAME == ARGV[2] {
     if ($1 == "@")
       apg = $2
     if ($1 == "requires:")
@@ -484,10 +484,10 @@ _mirror() {
   if [ -s /tmp/tar.lst ]
   then
     awk '
-    FILENAME ~ ARGV[1] {
+    FILENAME == ARGV[1] {
       pks = $0
     }
-    FILENAME ~ ARGV[2] {
+    FILENAME == ARGV[2] {
       print
       if (/last-mirror/) {
         getline
