@@ -165,7 +165,7 @@ _depends() {
       return
     spath[++x] = fpg
     for (y in spath)
-      printf spath[y] (y==x ? RS : " > ")
+      printf spath[y] (y == x ? RS : " > ")
     while (reqs[fpg, ++each])
       prpg(reqs[fpg, each])
     delete spath[x--]
@@ -177,8 +177,8 @@ _depends() {
     if ($1 == "@")
       apg = $2
     if ($1 == "requires:") {
-      for (y=2; y<=NF; y++) {
-        reqs[apg, y-1] = $y
+      for (y = 2; y <= NF; y++) {
+        reqs[apg, y - 1] = $y
       }
     }
   }
@@ -202,7 +202,7 @@ _rdepends() {
       return
     spath[++ju] = fpg
     for (ki in spath)
-      printf spath[ki] (ki==ju ? RS : " < ")
+      printf spath[ki] (ki == ju ? RS : " < ")
     while (reqs[fpg, ++each])
       prpg(reqs[fpg, each])
     delete spath[ju--]
@@ -214,7 +214,7 @@ _rdepends() {
     if ($1 == "@")
       apg = $2
     if ($1 == "requires:") {
-      for (mi=2; mi<=NF; mi++) {
+      for (mi = 2; mi <= NF; mi++) {
         reqs[$mi, ++no[$mi]] = apg
       }
     }
@@ -468,7 +468,7 @@ _autoremove() {
     }
   }
   $1 == "requires:" {
-    for (z=2; z<=NF; z++) {
+    for (z = 2; z <= NF; z++) {
       req[aph][$z]
     }
   }
@@ -482,7 +482,7 @@ _autoremove() {
     while (!done) {
       done = 1
       for (det in score) {
-        if (! score[det]) {
+        if (!score[det]) {
           done = 0
           print det
           delete score[det]
