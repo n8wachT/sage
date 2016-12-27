@@ -20,8 +20,9 @@ find_workspace() {
     while (i = substr(str, ++start, 1))
       if (i ~ /[[:alnum:]_.~-]/)
         j = j i
-      else
+      else {
         j = j "%" sprintf("%02X", charCodeAt[i])
+      }
     return j
   }
   $1 == "last-cache" {
@@ -73,11 +74,13 @@ _category() {
   FILENAME == ARGV[2] {
     if ($1 == "@")
       pck = $2
-    if ($1 == "category:")
+    if ($1 == "category:") {
       do
-        if ($NF == query)
+        if ($NF == query) {
           print pck
+        }
       while (--NF)
+    }
   }
   ' /tmp/tar.lst setup.ini
 }
@@ -173,13 +176,16 @@ _depends() {
   FILENAME == ARGV[2] {
     if ($1 == "@")
       apg = $2
-    if ($1 == "requires:")
-      for (y=2; y<=NF; y++)
+    if ($1 == "requires:") {
+      for (y=2; y<=NF; y++) {
         reqs[apg, y-1] = $y
+      }
+    }
   }
   END {
-    for (y in z)
+    for (y in z) {
       prpg(y)
+    }
   }
   ' /tmp/tar.lst setup.ini
 }
@@ -207,9 +213,11 @@ _rdepends() {
   FILENAME == ARGV[2] {
     if ($1 == "@")
       apg = $2
-    if ($1 == "requires:")
-      for (mi=2; mi<=NF; mi++)
+    if ($1 == "requires:") {
+      for (mi=2; mi<=NF; mi++) {
         reqs[$mi, ++no[$mi]] = apg
+      }
+    }
   }
   END {
     prpg(li)
@@ -453,30 +461,38 @@ _autoremove() {
     aph = $2
   }
   $1 == "category:" {
-    if (/ Base/)
-      if (aph in score)
+    if (/ Base/) {
+      if (aph in score) {
         score[aph]++
+      }
+    }
   }
   $1 == "requires:" {
-    for (z=2; z<=NF; z++)
+    for (z=2; z<=NF; z++) {
       req[aph][$z]
+    }
   }
   END {
     for (brv in req)
-      if (brv in score)
-        for (cha in req[brv])
+      if (brv in score) {
+        for (cha in req[brv]) {
           score[cha]++
-    while (! done) {
-      done=1
-      for (det in score)
+        }
+      }
+    while (!done) {
+      done = 1
+      for (det in score) {
         if (! score[det]) {
-          done=0
+          done = 0
           print det
           delete score[det]
-          if (isarray(req[det]))
-            for (ech in req[det])
+          if (isarray(req[det])) {
+            for (ech in req[det]) {
               score[ech]--
+            }
+          }
         }
+      }
     }
   }
   ' /etc/setup/installed.db setup.ini | sage remove
