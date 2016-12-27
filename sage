@@ -236,7 +236,11 @@ download() {
   pkg=$1
   # look for package and save desc file
 
-  awk '$1 == pc' RS='\n\n@ ' FS='\n' pc="$pkg" setup.ini > desc
+  awk '
+  BEGIN {ARGC = 2}
+  $1 == "@" {q = $2 == ARGV[2] ? 1 : 0}
+  q
+  ' setup.ini "$pkg" > desc
   if [ ! -s desc ]
   then
     echo 'Unable to locate package' "$pkg"
@@ -420,7 +424,7 @@ _remove() {
       done < setup/"$pkg".lst
       rm -f setup/"$pkg".lst.gz postinstall/"$pkg".sh.done
       awk '
-      BEGIN {ARGC--}
+      BEGIN {ARGC = 2}
       $1 != ARGV[2]
       ' setup/installed.db "$pkg" > /tmp/installed.db
       mv /tmp/installed.db setup/installed.db
