@@ -190,17 +190,15 @@ _rdepends() {
     return
   fi
   find_workspace
-  unset POSIXLY_CORRECT
   awk "$smartmatch"'
-  function prpg(fpg) {
+  function prpg(fpg, each) {
     if (smartmatch(fpg, spath))
       return
     spath[++ju] = fpg
     for (ki in spath)
       printf spath[ki] (ki==ju ? RS : " < ")
-    if (reqs[fpg][1])
-      for (each in reqs[fpg])
-        prpg(reqs[fpg][each])
+    while (reqs[fpg, ++each])
+      prpg(reqs[fpg, each])
     delete spath[ju--]
   }
   FILENAME == ARGV[1] {
@@ -211,7 +209,7 @@ _rdepends() {
       apg = $2
     if ($1 == "requires:")
       for (mi=2; mi<=NF; mi++)
-        reqs[$mi][++no[$mi]] = apg
+        reqs[$mi, ++no[$mi]] = apg
   }
   END {
     prpg(li)
