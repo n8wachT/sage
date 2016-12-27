@@ -1,81 +1,31 @@
 Cygwin package manager
-======================
-![logo][raw]
+=========================
+![sage.jpg 540 x 360][qu]
+
+![bountysource $ raised][br]
 
 Sage is a Cygwin package manager. It includes a command-line installer for
 Cygwin which cooperates with Cygwin Setup and uses the same repository.
 
-[![bountysource][api]][www]
-
-<!-- protocol is needed for image to render -->
-[raw]:https://raw.githubusercontent.com/svnpenn/sage/master/sage.jpg
-[api]:https://api.bountysource.com/badge/team?team_id=114003&style=raised
-[www]:https://www.bountysource.com/teams/svnpenn
-
-Operations
-----------
-
-~~~
-install
-  Install package(s).
-
-remove
-  Remove package(s) from the system.
-
-update
-  Download a fresh copy of the master package list (setup.ini) from the
-  server defined in setup.rc.
-
-download
-  Retrieve package(s) from the server, but do not install/upgrade anything.
-
-show
-  Display information on given package(s).
-
-depends
-  Produce a dependency tree for a package.
-
-rdepends
-  Produce a tree of packages that depend on the named package.
-
-list
-  Search each locally-installed package for names that match regexp. If no
-  package names are provided in the command line, all installed packages will
-  be queried.
-
-listall
-  This will search each package in the master package list (setup.ini) for
-  names that match regexp.
-
-category
-  Display all packages that are members of a named category.
-
-listfiles
-  List all files owned by a given package. Multiple packages can be specified
-  on the command line.
-
-search
-  Search for downloaded packages that own the specified file(s). The path can
-  be relative or absolute, and one or more files can be specified.
-
-searchall
-  Search cygwin.com to retrieve file information about packages. The provided
-  target is considered to be a filename and searchall will return the
-  package(s) which contain this file.
-~~~
-
 Install
 -------
+1. Download https://codeload.github.com/svnpenn/sage/zip/master
 
-1. Click https://raw.githubusercontent.com/svnpenn/sage/master/sage
+2. Right click, extract
 
-2. Click File, Save Page As, Save
+3. Run `./install.sh`
 
-3. `install sage /bin`
+Links
+---------------------
+- [Documentation][ya]
+- [svnpenn - Bountysource][xr]
 
-Example
--------
+Author
+------------
+Steven Penny
 
-~~~
-sage install make
-~~~
+<!-- protocol is needed for image to render -->
+[br]:https://api.bountysource.com/badge/team?team_id=114003&style=raised
+[qu]:https://raw.githubusercontent.com/svnpenn/sage/master/sage.jpg
+[xr]:https://www.bountysource.com/teams/svnpenn
+[ya]:https://github.com/svnpenn/sage/blob/master/sage.txt
