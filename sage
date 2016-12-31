@@ -14,28 +14,23 @@ wget() {
 
 find_workspace() {
   awk '
-  function encodeURIComponent(str,   start, j) {
-    for (i = 0; i <= 255; i++)
-      charCodeAt[sprintf("%c", i)] = i
-    while (i = substr(str, ++start, 1))
-      if (i ~ /[[:alnum:]_.~-]/)
-        j = j i
-      else {
-        j = j "%" sprintf("%02X", charCodeAt[i])
-      }
-    return j
+  function encodeURIComponent(str, j, q) {
+    while (y++ < 125) z[sprintf("%c", y)] = y
+    while (y = substr(str, ++j, 1))
+      q = y ~ /[[:alnum:]_.!~*\47()-]/ ? q y : q sprintf("%%%02X", z[y])
+    return q
   }
   $1 == "last-cache" {
     getline
-    y = $1
+    k = $1
   }
   $1 == "last-mirror" {
     getline
-    z = $1
+    v = $1
   }
   END {
-    print z
-    print y "/" encodeURIComponent(z)
+    print v
+    print k "/" encodeURIComponent(v)
   }
   ' /etc/setup/setup.rc > /tmp/fin.lst
   for each in mirror cache
