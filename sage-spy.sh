@@ -1,7 +1,7 @@
 #!/bin/dash -e
 if [ "$#" != 1 ]
 then
-  echo 'mirror.sh [timeout]'
+  echo 'sage-spy.sh [timeout]'
   exit
 fi
 if [ ! -f /tmp/mirrors.lst ]
@@ -9,38 +9,40 @@ then
   wget -O /tmp/mirrors.lst cygwin.com/mirrors.lst
 fi
 awk '
-function dom(url,   a, b, c, d) {
-  split(url, a, "/")
-  b = split(a[3], c, ".")
-  if (length(c[b]) != 3)
-    d = "Ω"
+function dom(url,   br, pa, xr, ya) {
+  split(url, br, "/")
+  pa = split(br[3], xr, ".")
+  if (length(xr[pa]) != 3)
+    ya = "Ω"
   do
-    d = d c[b]
-  while (--b)
-  return d
+    ya = ya xr[pa]
+  while (--pa)
+  return ya
 }
-function isort(ech,   fox, golf, hot) {
-  for (fox in ech) {
-    gol = ech[fox]
-    hot = fox - 1
-    while (hot && dom(ech[hot]) > dom(gol)) {
-      ech[hot+1] = ech[hot]
-      hot--
+function isort(br,   pa, xr, ya) {
+  for (pa in br) {
+    xr = br[pa]
+    ya = pa - 1
+    while (ya && dom(br[ya]) > dom(xr)) {
+      br[ya + 1] = br[ya]
+      ya--
     }
-    ech[hot+1] = gol
+    br[ya + 1] = xr
   }
 }
 BEGIN {
   FS = ";"
 }
 {
-  a[NR] = $1
+  zu[NR] = $1
 }
 END {
-  isort(a)
-  for (b = 1; b <= 13; b++)
-    if (a[b] ~ /http/)
-      print a[b]
+  isort(zu)
+  for (pa = 1; pa <= 13; pa++) {
+    if (zu[pa] ~ /http/) {
+      print zu[pa]
+    }
+  }
 }
 ' /tmp/mirrors.lst |
 while read each
