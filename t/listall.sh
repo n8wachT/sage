@@ -1,2 +1,2 @@
 #!/bin/dash
-sage listall make$
+sage listall 'make$'

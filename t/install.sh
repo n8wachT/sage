@@ -9,17 +9,17 @@ pause() {
 }
 
 # rel=0 setup=0
-rm -f $rel $setup
+rm -f "$rel" "$setup"
 sage install make
 pause
 
 # rel=0 setup=1
-rm -f $rel
+rm -f "$rel"
 sage install make
 pause
 
 # rel=1 setup=0
-rm -f $setup
+rm -f "$setup"
 sage install make
 pause
 

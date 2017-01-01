@@ -14,12 +14,12 @@ sage download mak
 pause
 
 # exist=0
-rm -f $rel
+rm -f "$rel"
 sage download make
 pause
 
 # exist=1 sha=0
-truncate -s0 $rel
+truncate -s0 "$rel"
 sage download make
 pause
 
