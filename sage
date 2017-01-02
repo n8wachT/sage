@@ -233,51 +233,36 @@ _download() {
 }
 
 download() {
-  local pkg digest digactual
   pkg=$1
+  zu=$(mktemp)
   # look for package and save desc file
 
   awk '
   BEGIN {ARGC = 2}
   $1 == "@" {q = $2 == ARGV[2] ? 1 : 0}
   q
-  ' setup.ini "$pkg" > desc
-  if [ ! -s desc ]
-  then
-    echo 'Unable to locate package' "$pkg"
-    return
-  fi
+  ' setup.ini "$pkg" > "$zu"
 
   # download and unpack the bz2 or xz file
 
   # pick the latest version, which comes first
-  set -- $(awk '$1 == "install:"' desc)
-  if [ "$#" = 0 ]
+  set -- $(awk '$1 == "install:"' "$zu")
+
+  drn=$(dirname "$2")
+  bsn=$(basename "$2")
+
+  ckm=$4
+  mkdir -p "$cache"/"$drn"
+  cd "$cache"/"$drn"
+  if ! test -f "$bsn" || ! echo "$ckm" "$bsn" | sha512sum -c
   then
-    echo 'Could not find "install" in package description: obsolete package?'
-    return
+    wget -O "$bsn" "$mirror"/"$drn"/"$bsn"
+    echo "$ckm" "$bsn" | sha512sum -c || return
   fi
 
-  dn=$(dirname "$2")
-  bn=$(basename "$2")
-
-  # check the md5
-  digest=$4
-  case ${#digest} in
-   32) hash=md5sum    ;;
-  128) hash=sha512sum ;;
-  esac
-  mkdir -p "$cache"/"$dn"
-  cd "$cache"/"$dn"
-  if ! test -f "$bn" || ! echo "$digest" "$bn" | "$hash" -c
-  then
-    wget -O "$bn" "$mirror"/"$dn"/"$bn"
-    echo "$digest" "$bn" | "$hash" -c || return
-  fi
-
-  tar tf "$bn" | gzip > /etc/setup/"$pkg".lst.gz
+  tar tf "$bsn" | gzip > /etc/setup/"$pkg".lst.gz
   cd "$cache"/"$arch"
-  echo "$dn" "$bn" > /tmp/dwn
+  echo "$drn" "$bsn" > /tmp/dwn
 }
 
 _search() {
