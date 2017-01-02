@@ -254,10 +254,14 @@ download() {
   ckm=$4
   mkdir -p "$cache"/"$drn"
   cd "$cache"/"$drn"
-  if ! test -f "$bsn" || ! echo "$ckm" "$bsn" | sha512sum -c
+  if ! test -f "$bsn" || ! sha512sum -c <<eof
+$ckm $bsn
+eof
   then
     wget -O "$bsn" "$mirror"/"$drn"/"$bsn"
-    echo "$ckm" "$bsn" | sha512sum -c || return
+    sha512sum -c <<eof || return
+$ckm $bsn
+eof
   fi
 
   tar tf "$bsn" | gzip > /etc/setup/"$pkg".lst.gz
