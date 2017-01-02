@@ -19,7 +19,7 @@ function dom(url,   br, pa, xr, ya) {
   while (--pa)
   return ya
 }
-function isort(br,   pa, xr, ya) {
+function asrt(br,   pa, xr, ya) {
   for (pa in br) {
     xr = br[pa]
     ya = pa - 1
@@ -37,7 +37,7 @@ BEGIN {
   zu[NR] = $1
 }
 END {
-  isort(zu)
+  asrt(zu)
   for (pa = 1; pa <= 13; pa++) {
     if (zu[pa] ~ /http/) {
       print zu[pa]
