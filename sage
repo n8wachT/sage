@@ -234,39 +234,41 @@ _download() {
 
 download() {
   pkg=$1
-  zu=$(mktemp)
-  # look for package and save desc file
 
   awk '
-  BEGIN {ARGC = 2}
-  $1 == "@" {q = $2 == ARGV[2] ? 1 : 0}
-  q
-  ' setup.ini "$pkg" > "$zu"
+  BEGIN {
+    ARGC = 2
+  }
+  $1 == "@" && $2 == ARGV[2] {
+    y = 1
+  }
+  $1 == "install:" && y {
+    print $2, $4
+    exit
+  }
+  ' setup.ini "$pkg" |
+  while read nam ckm
+  do
 
-  # download and unpack the bz2 or xz file
+    drn=$(dirname "$nam")
+    bsn=$(basename "$nam")
 
-  # pick the latest version, which comes first
-  set -- $(awk '$1 == "install:"' "$zu")
-
-  drn=$(dirname "$2")
-  bsn=$(basename "$2")
-
-  ckm=$4
-  mkdir -p "$cache"/"$drn"
-  cd "$cache"/"$drn"
-  if ! test -f "$bsn" || ! sha512sum -c <<eof
+    mkdir -p "$cache"/"$drn"
+    cd "$cache"/"$drn"
+    if ! test -f "$bsn" || ! sha512sum -c <<eof
 $ckm $bsn
 eof
-  then
-    wget -O "$bsn" "$mirror"/"$drn"/"$bsn"
-    sha512sum -c <<eof || return
+    then
+      wget -O "$bsn" "$mirror"/"$drn"/"$bsn"
+      sha512sum -c <<eof || return
 $ckm $bsn
 eof
-  fi
+    fi
 
-  tar tf "$bsn" | gzip > /etc/setup/"$pkg".lst.gz
-  cd "$cache"/"$arch"
-  echo "$drn" "$bsn" > /tmp/dwn
+    tar tf "$bsn" | gzip > /etc/setup/"$pkg".lst.gz
+    cd "$cache"/"$arch"
+    echo "$drn" "$bsn" > /tmp/dwn
+  done
 }
 
 _search() {

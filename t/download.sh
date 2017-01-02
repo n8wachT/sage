@@ -1,27 +1,27 @@
-#!/bin/dash
-rel=/Documents/http*/x86_64/release/make/make-4.1-1.tar.xz
+#!/bin/dash -e
 
-pause() {
-  echo 'Press any key to continue . . .'
-  read _
-  printf '\33c'
+xc() {
+  awk 'BEGIN {d = "\47"; printf "\33[36m"; while (++j < ARGC) {
+  k = split(ARGV[j], q, d); q[1]; for (x in q) printf "%s%s",
+  q[x] ~ /^[[:alnum:]%+,./:=@_-]+$/ ? q[x] : d q[x] d, x < k ? "\\" d : ""
+  printf j == ARGC - 1 ? "\33[m\n" : FS}}' "$@"
+  "$@"
 }
 
-sage download
-pause
+for q in /usr/local/http*/x86_64/release/make/make-*.tar.xz
+do :
+done
+xc sage download
 
-sage download mak
-pause
+xc sage download mak
 
 # exist=0
-rm -f "$rel"
-sage download make
-pause
+xc rm -fv "$q"
+xc sage download make
 
 # exist=1 sha=0
-truncate -s0 "$rel"
-sage download make
-pause
+xc truncate -s0 "$q"
+xc sage download make
 
 # exist=1 sha=1
-sage download make
+xc sage download make
