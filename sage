@@ -14,11 +14,11 @@ wget() {
 
 find_workspace() {
   awk '
-  function encodeURIComponent(str, j, q) {
-    while (y++ < 125) z[sprintf("%c", y)] = y
-    while (y = substr(str, ++j, 1))
-      q = y ~ /[[:alnum:]_.!~*\47()-]/ ? q y : q sprintf("%%%02X", z[y])
-    return q
+  function encodeURIComponent(str,   j, q, y, z) {
+    while (j++ < 125) q[sprintf("%c", j)] = j
+    while (j = substr(str, ++y, 1))
+      z = j ~ /[[:alnum:]_.!~*\47()-]/ ? z j : z sprintf("%%%02X", q[j])
+    return z
   }
   $1 == "last-cache" {
     getline
