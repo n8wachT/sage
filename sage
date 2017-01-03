@@ -191,30 +191,30 @@ _rdepends() {
   fi
   find_workspace
   awk "$smartmatch"'
-  function prpg(fpg, each) {
-    if (smartmatch(fpg, spath))
+  function rtree(package,   ec, ro, ta) {
+    if (smartmatch(package, branch))
       return
-    spath[++ju] = fpg
-    for (ki in spath)
-      printf spath[ki] (ki == ju ? RS : " < ")
-    while (reqs[fpg, ++each])
-      prpg(reqs[fpg, each])
-    delete spath[ju--]
+    branch[++ec] = package
+    for (ro in branch)
+      printf branch[ro] (ro == ec ? RS : " < ")
+    while (reqs[package, ++ta])
+      rtree(reqs[package, ta], ec)
+    delete branch[ec--]
   }
   FILENAME == ARGV[1] {
-    li = $0
+    xr = $0
   }
   FILENAME == ARGV[2] {
     if ($1 == "@")
-      apg = $2
+      ya = $2
     if ($1 == "requires:") {
-      for (mi = 2; mi <= NF; mi++) {
-        reqs[$mi, ++no[$mi]] = apg
+      for (zu = 2; zu <= NF; zu++) {
+        reqs[$zu, ++ki[$zu]] = ya
       }
     }
   }
   END {
-    prpg(li)
+    rtree(xr)
   }
   ' /tmp/tar.lst setup.ini
 }
