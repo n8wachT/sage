@@ -154,31 +154,31 @@ _depends() {
   fi
   find_workspace
   awk "$smartmatch"'
-  function prpg(fpg, each) {
-    if (smartmatch(fpg, spath))
+  function tree(package,   ec, ro, ta) {
+    if (smartmatch(package, branch))
       return
-    spath[++x] = fpg
-    for (y in spath)
-      printf spath[y] (y == x ? RS : " > ")
-    while (reqs[fpg, ++each])
-      prpg(reqs[fpg, each])
-    delete spath[x--]
+    branch[++ec] = package
+    for (ro in branch)
+      printf branch[ro] (ro == ec ? RS : " > ")
+    while (reqs[package, ++ta])
+      tree(reqs[package, ta], ec)
+    delete branch[ec--]
   }
   FILENAME == ARGV[1] {
-    z[$0]
+    xr[$0]
   }
   FILENAME == ARGV[2] {
     if ($1 == "@")
-      apg = $2
+      ya = $2
     if ($1 == "requires:") {
-      for (y = 2; y <= NF; y++) {
-        reqs[apg, y - 1] = $y
+      for (zu = 2; zu <= NF; zu++) {
+        reqs[ya, zu - 1] = $zu
       }
     }
   }
   END {
-    for (y in z) {
-      prpg(y)
+    for (zu in xr) {
+      tree(zu)
     }
   }
   ' /tmp/tar.lst setup.ini
