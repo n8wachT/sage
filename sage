@@ -141,10 +141,9 @@ _show() {
 }
 
 smartmatch='
-function smartmatch(small, large,    values) {
-  for (each in large)
-    values[large[each]]
-  return small in values
+function smartmatch(diamond, rough,   x, y) {
+  for (x in rough) y[rough[x]]
+  return diamond in y
 }
 '
 
