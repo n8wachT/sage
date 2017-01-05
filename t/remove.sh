@@ -21,4 +21,4 @@ sage remove make
 pause
 
 # essential
-sage remove bash
+sage remove xz
