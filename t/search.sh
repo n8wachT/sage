@@ -7,6 +7,6 @@ pause() {
 
 sage search
 pause
-sage search bin/bsh
+sage search bin/wk
 pause
-sage search bin/bash
+sage search bin/awk
