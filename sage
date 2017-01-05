@@ -378,7 +378,7 @@ _remove() {
     return
   fi
   cd /etc
-  cygcheck awk bash bunzip2 grep gzip mv sed tar xz > /tmp/rmv.lst
+  cygcheck awk sh bunzip2 grep gzip mv sed tar xz > /tmp/rmv.lst
   while read pkg
   do
 
