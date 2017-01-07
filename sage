@@ -309,18 +309,20 @@ _searchall() {
     return
   fi
   xr=$(mktemp)
-  while read pks
-  do
-    wget -O "$xr" \
-    'cygwin.com/cgi-bin2/package-grep.cgi?text=1&arch='"$arch"'&grep='"$pks"
-    awk '
-    NR == 1 {next}
-    mc[$1]++ {next}
-    /-debuginfo-/ {next}
-    /^cygwin32-/ {next}
-    {print $1}
-    ' FS=-[[:digit:]] "$xr"
-  done </tmp/tar.lst
+  read v </tmp/tar.lst
+  wget -O "$xr" \
+  'https://cygwin.com/cgi-bin2/package-grep.cgi?text=1&arch='"$arch"'&grep='"$v"
+  awk '
+  BEGIN {
+    FS = "-[[:digit:]]"
+  }
+  NR == 1 || z[$1]++ || /-debuginfo-/ || /^cygwin32-/ {
+    next
+  }
+  {
+    print $1
+  }
+  ' "$xr"
 }
 
 _install() {
