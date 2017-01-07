@@ -98,15 +98,11 @@ _listall() {
   fi
   find_workspace
   awk '
-  BEGIN {
-    RS = "\n\n@ "
-    FS = "\n"
-  }
   FILENAME == ARGV[1] {
-    pkg = $1
+    pkg = $0
   }
-  FILENAME == ARGV[2] && $1 ~ pkg {
-    print $1
+  FILENAME == ARGV[2] && $1 == "@" && $2 ~ pkg {
+    print $2
   }
   ' /tmp/tar.lst setup.ini
 }
