@@ -332,6 +332,7 @@ _install() {
   fi
   find_workspace
   local pkg dn bn script
+  j=$(mktemp)
   if [ "$nodeps" ]
   then
     cat /tmp/tar.lst
@@ -343,22 +344,25 @@ _install() {
   do
     echo 'Installing' "$pkg"
     download "$pkg"
-    read dn bn </tmp/dwn
+    read drn bsn < /tmp/dwn
     echo 'Unpacking...'
-    tar -x -C / -f ../"$dn"/"$bn"
+    tar -x -C / -f ../"$drn"/"$bsn"
     # update the package database
 
     awk '
-    ins != 1 && pkg < $1 {
-      print pkg, bz, 0
-      ins = 1
+    BEGIN {
+      ARGC = 2
+    }
+    NR > 1 && ARGV[2] < $1 && !q {
+      print ARGV[2], ARGV[3], 0
+      q = 1
     }
     1
     END {
-      if (ins != 1) print pkg, bz, 0
+      if (!q) print ARGV[2], ARGV[3], 0
     }
-    ' pkg="$pkg" bz="$bn" /etc/setup/installed.db > /tmp/installed.db
-    mv /tmp/installed.db /etc/setup/installed.db
+    ' /etc/setup/installed.db "$pkg" "$bsn" > "$j"
+    mv "$j" /etc/setup/installed.db
 
   done
   # run all postinstall scripts
