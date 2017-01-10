@@ -21,7 +21,7 @@ $1 == "@" {
   xr = $2
 }
 $1 == "install:" && xr {
-  printf "%9\47d %s\n", $3, xr
+  printf "%11\47d %s\n", $3, xr
   xr = ""
   ya += 1
   zu += $3
