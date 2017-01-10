@@ -1,7 +1,7 @@
 #!/bin/dash -e
-if [ "$#" != 1 ]
+if [ "$#" = 0 ]
 then
-  echo 'sage-cost.sh [package]'
+  echo 'sage-cost.sh [packages]'
   exit
 fi
 wh=$(mktemp)
@@ -11,7 +11,7 @@ xargs sage depends |
 awk '$0=$NF' |
 sort -u > "$wh"
 
-sage depends "$1" |
+sage depends "$@" |
 awk '$0=$NF' |
 sort -u |
 grep -Fvxf "$wh" |
