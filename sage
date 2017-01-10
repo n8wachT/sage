@@ -342,7 +342,6 @@ _install() {
   resolve_deps - |
   while read pkg
   do
-    echo 'Installing' "$pkg"
     download "$pkg"
     read drn bsn < /tmp/dwn
     echo 'Unpacking...'
