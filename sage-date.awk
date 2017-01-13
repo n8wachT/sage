@@ -16,16 +16,18 @@ BEGIN {
     print "setup.ini not found"
     exit
   }
-  for (ch = 2; ch < ARGC; ch++) {
-    while (getline < "setup.ini") {
-      if ($1 == "@" && $2 == ARGV[ch])
-        de = 1
-      if ($1 == "install:" && de) {
-        while ("curl -I " quote(ARGV[1]) "/" $2 | getline ec)
-          if (ec ~ "Last-Modified") {
-            print ARGV[ch] ";", ec
-          }
-        break
+  while (getline < "setup.ini") {
+    if ($1 == "@")
+      br = $2
+    if ($1 == "install:" && br) {
+      ch[br] = $2
+      br = ""
+    }
+  }
+  for (de = 2; de < ARGC; de++) {
+    while ("curl -I " quote(ARGV[1]) "/" ch[ARGV[de]] | getline) {
+      if ($1 == "Last-Modified:") {
+        print ARGV[de] ";", $0
       }
     }
   }
