@@ -1,7 +1,4 @@
 #!/usr/bin/awk -f
-function read(expr) {
-  return getline < expr < 0 ? 0 : 1
-}
 function quote(str,   d, m, x, y, z) {
   d = "\47"; m = split(str, x, d)
   for (y in x) z = z d x[y] d (y < m ? "\\" d : "")
@@ -12,11 +9,11 @@ BEGIN {
     print "sage-date.awk [mirror] [packages]"
     exit
   }
-  if (!read("setup.ini")) {
-    print "setup.ini not found"
-    exit
-  }
-  while (getline < "setup.ini") {
+  while (ec = getline < "setup.ini") {
+    if (ec < 0) {
+      print "setup.ini not found"
+      exit
+    }
     if ($1 == "@")
       br = $2
     if ($1 == "install:" && br) {
