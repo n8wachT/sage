@@ -308,7 +308,7 @@ _searchall() {
   then
     return
   fi
-  xr=$(mktemp)
+  xr=$(mktemp /tmp/XXX)
   read v </tmp/tar.lst
   wget -O "$xr" \
   'https://cygwin.com/cgi-bin2/package-grep.cgi?text=1&arch='"$arch"'&grep='"$v"
