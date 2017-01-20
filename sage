@@ -34,18 +34,15 @@ find_workspace() {
   }
   ' /etc/setup/setup.rc > /tmp/fin.lst
   for each in mirror cache
-  do
-    read -r "$each"
+  do read -r "$each"
   done < /tmp/fin.lst
   cd "$cache"/"$arch"
 }
 
 no_targets() {
   if [ -s /tmp/tar.lst ]
-  then
-    false
-  else
-    echo 'No packages found.'
+  then false
+  else echo 'No packages found.'
   fi
 }
 
@@ -58,8 +55,7 @@ _update() {
 
 _category() {
   if no_targets
-  then
-    return
+  then return
   fi
   find_workspace
   awk '
@@ -93,8 +89,7 @@ _list() {
 
 _listall() {
   if no_targets
-  then
-    return
+  then return
   fi
   find_workspace
   awk '
@@ -109,15 +104,13 @@ _listall() {
 
 _listfiles() {
   if no_targets
-  then
-    return
+  then return
   fi
   find_workspace
   while read pkg
   do
     if [ ! -f /etc/setup/"$pkg".lst.gz ]
-    then
-      download "$pkg"
+    then download "$pkg"
     fi
     gzip -cd /etc/setup/"$pkg".lst.gz
   done </tmp/tar.lst
@@ -145,8 +138,7 @@ function smartmatch(diamond, rough,   x, y) {
 
 _depends() {
   if no_targets
-  then
-    return
+  then return
   fi
   find_workspace
   awk "$smartmatch"'
@@ -182,8 +174,7 @@ _depends() {
 
 _rdepends() {
   if no_targets
-  then
-    return
+  then return
   fi
   find_workspace
   awk "$smartmatch"'
@@ -217,13 +208,11 @@ _rdepends() {
 
 _download() {
   if no_targets
-  then
-    return
+  then return
   fi
   find_workspace
   while read pkg
-  do
-    download "$pkg"
+  do download "$pkg"
   done </tmp/tar.lst
 }
 
@@ -268,15 +257,13 @@ eof
 
 _search() {
   if no_targets
-  then
-    return
+  then return
   fi
   echo 'Searching downloaded packages...'
   for manifest in /etc/setup/*.lst.gz
   do
     if gzip -cd "$manifest" | grep -q -f /tmp/tar.lst
-    then
-      echo "$manifest"
+    then echo "$manifest"
     fi
   done | awk '$0=$4' FS='[./]'
 }
@@ -305,8 +292,7 @@ resolve_deps() {
 
 _searchall() {
   if no_targets
-  then
-    return
+  then return
   fi
   xr=$(mktemp /tmp/XXX)
   read v </tmp/tar.lst
@@ -327,17 +313,14 @@ _searchall() {
 
 _install() {
   if no_targets
-  then
-    return
+  then return
   fi
   find_workspace
   local pkg script
   j=$(mktemp)
   if [ "$nodeps" ]
-  then
-    cat /tmp/tar.lst
-  else
-    _depends
+  then cat /tmp/tar.lst
+  else _depends
   fi |
   resolve_deps - |
   while read pkg
@@ -376,8 +359,7 @@ _install() {
 
 _remove() {
   if no_targets
-  then
-    return
+  then return
   fi
   cd /etc
   cygcheck awk sh bunzip2 grep gzip mv sed tar xz > /tmp/rmv.lst
@@ -411,8 +393,7 @@ _remove() {
       while read each
       do
         if [ -f /"$each" ]
-        then
-          rm /"$each"
+        then rm /"$each"
         fi
       done < setup/"$pkg".lst
       rm -f setup/"$pkg".lst.gz postinstall/"$pkg".sh.done
