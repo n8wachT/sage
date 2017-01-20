@@ -331,7 +331,7 @@ _install() {
     return
   fi
   find_workspace
-  local pkg dn bn script
+  local pkg script
   j=$(mktemp)
   if [ "$nodeps" ]
   then
@@ -365,8 +365,9 @@ _install() {
 
   done
   # run all postinstall scripts
-  find /etc/postinstall -name '*.sh' | while read script
-  do
+  set /etc/postinstall/*.sh
+  [ -e "$1" ] || shift
+  for script do
     echo 'Running' "$script"
     "$script"
     mv "$script" "$script".done
