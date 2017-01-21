@@ -78,13 +78,15 @@ _category() {
 
 _list() {
   awk '
-  FILENAME == ARGV[1] {
-    pkg = $0
+  BEGIN {
+    ARGC--
+    getline x < ARGV[2]
   }
-  FILENAME == ARGV[2] && FNR > 1 && $1 ~ pkg {
-    print $1
+  NR > 1 && $1 ~ x {
+    split($2, y, /\.[[:alpha:]]/)
+    print y[1]
   }
-  ' /tmp/tar.lst /etc/setup/installed.db
+  ' /etc/setup/installed.db /tmp/tar.lst
 }
 
 _listall() {
