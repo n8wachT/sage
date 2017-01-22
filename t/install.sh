@@ -1,27 +1,25 @@
-#!/bin/dash
-rel=/Documents/http*/x86_64/release/make/make-4.1-1.tar.xz
-setup=/etc/setup/make.lst.gz
+#!/bin/dash -e
+. ./stdlib.sh
 
-pause() {
-  echo 'Press any key to continue . . .'
-  read _
-  printf '\33c'
-}
+q=/etc/setup/make.lst.gz
+for y in /usr/local/http*/x86_64/release/make/make-*.tar.xz
+do :
+done
 
 # rel=0 setup=0
-rm -f "$rel" "$setup"
-sage install make
+xtrace rm -fv "$y" "$q"
+xtrace sage install make
 pause
 
 # rel=0 setup=1
-rm -f "$rel"
-sage install make
+xtrace rm -fv "$y"
+xtrace sage install make
 pause
 
 # rel=1 setup=0
-rm -f "$setup"
-sage install make
+xtrace rm -fv "$q"
+xtrace sage install make
 pause
 
 # rel=1 setup=1
-sage install make
+xtrace sage install make
