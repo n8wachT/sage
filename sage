@@ -12,30 +12,29 @@ wget() {
   fi
 }
 
-find_workspace() {
+setwd() {
+  ec=$(mktemp)
   awk '
-  function encodeURIComponent(str,   j, q, y, z) {
-    while (j++ < 125) q[sprintf("%c", j)] = j
-    while (j = substr(str, ++y, 1))
-      z = j ~ /[[:alnum:]_.!~*\47()-]/ ? z j : z sprintf("%%%02X", q[j])
+  function encodeURIComponent(str,   g, q, y, z) {
+    while (g++ < 125) q[sprintf("%c", g)] = g
+    while (g = substr(str, ++y, 1))
+      z = z (g ~ /[[:alnum:]_.!~*\47()-]/ ? g : sprintf("%%%02X", q[g]))
     return z
   }
   $1 == "last-cache" {
     getline
-    k = $1
+    br = $1
   }
   $1 == "last-mirror" {
     getline
-    v = $1
+    print br "/" encodeURIComponent($1)
+    print $1
   }
-  END {
-    print v
-    print k "/" encodeURIComponent(v)
-  }
-  ' /etc/setup/setup.rc > /tmp/fin.lst
-  for each in mirror cache
-  do read -r "$each"
-  done < /tmp/fin.lst
+  ' /etc/setup/setup.rc > "$ec"
+  {
+    read -r cache
+    read mirror
+  } < "$ec"
   cd "$cache"/"$arch"
 }
 
@@ -47,7 +46,7 @@ no_targets() {
 }
 
 _update() {
-  find_workspace
+  setwd
   wget -N "$mirror"/"$arch"/setup.bz2
   bunzip2 < setup.bz2 > setup.ini
   echo 'Updated setup.ini'
@@ -57,7 +56,7 @@ _category() {
   if no_targets
   then return
   fi
-  find_workspace
+  setwd
   awk '
   FILENAME == ARGV[1] {
     query = $0
@@ -93,7 +92,7 @@ _listall() {
   if no_targets
   then return
   fi
-  find_workspace
+  setwd
   awk '
   FILENAME == ARGV[1] {
     pkg = $0
@@ -108,7 +107,6 @@ _listfiles() {
   if no_targets
   then return
   fi
-  find_workspace
   while read pkg
   do
     if [ ! -f /etc/setup/"$pkg".lst.gz ]
@@ -119,7 +117,7 @@ _listfiles() {
 }
 
 _show() {
-  find_workspace
+  setwd
   awk '
   FILENAME == ARGV[1] {
     x[$0]
@@ -142,7 +140,7 @@ _depends() {
   if no_targets
   then return
   fi
-  find_workspace
+  setwd
   awk "$smartmatch"'
   function tree(package,   ec, ro, ta) {
     if (smartmatch(package, branch))
@@ -178,7 +176,7 @@ _rdepends() {
   if no_targets
   then return
   fi
-  find_workspace
+  setwd
   awk "$smartmatch"'
   function rtree(package,   ec, ro, ta) {
     if (smartmatch(package, branch))
@@ -212,7 +210,6 @@ _download() {
   if no_targets
   then return
   fi
-  find_workspace
   while read pkg
   do download "$pkg"
   done </tmp/tar.lst
@@ -220,6 +217,7 @@ _download() {
 
 download() {
   pkg=$1
+  setwd
 
   awk '
   BEGIN {
@@ -271,6 +269,7 @@ _search() {
 }
 
 resolve_deps() {
+  setwd
   awk '
   function e(file) {
     return getline < file < 0 ? 0 : 1
@@ -317,7 +316,6 @@ _install() {
   if no_targets
   then return
   fi
-  find_workspace
   local pkg script
   j=$(mktemp)
   if [ "$nodeps" ]
@@ -417,7 +415,7 @@ _remove() {
 }
 
 _autoremove() {
-  find-workspace
+  setwd
   unset POSIXLY_CORRECT
   awk '
   NR == 1 {
