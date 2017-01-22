@@ -1,24 +1,16 @@
-#!/bin/dash
-pause() {
-  echo 'Press any key to continue . . .'
-  read _
-  printf '\33c'
-}
+#!/bin/dash -e
+. ./stdlib.sh
 
-sage remove
-pause
+xtrace sage remove
 
-sage remove mak
-pause
+xtrace sage remove mak
 
 # installed
-sage install make
-sage remove make
-pause
+xtrace sage install make
+xtrace sage remove make
 
 # not installed
-sage remove make
-pause
+xtrace sage remove make
 
 # essential
-sage remove xz
+xtrace sage remove xz
