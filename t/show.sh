@@ -1,12 +1,6 @@
-#!/bin/dash
-pause() {
-  echo 'Press any key to continue . . .'
-  read _
-  printf '\33c'
-}
+#!/bin/dash -e
+. ./stdlib.sh
 
-sage show
-pause
-sage show mak
-pause
-sage show make
+xtrace sage show
+xtrace sage show mak
+xtrace sage show make
