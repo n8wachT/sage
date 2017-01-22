@@ -1,12 +1,7 @@
-#!/bin/dash
-pause() {
-  echo 'Press any key to continue . . .'
-  read _
-  printf '\33c'
-}
-
-sage depends
+#!/bin/dash -e
+. ./stdlib.sh
+xtrace sage depends
 pause
-sage depends mak
+xtrace sage depends mak
 pause
-sage depends make
+xtrace sage depends make
