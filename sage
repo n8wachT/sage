@@ -21,21 +21,31 @@ setwd() {
       z = z (g ~ /[[:alnum:]_.!~*\47()-]/ ? g : sprintf("%%%02X", q[g]))
     return z
   }
-  $1 == "last-cache" {
-    getline
-    br = $1
+  function quote(str,   d, m, x, y, z) {
+    d = "\47"; m = split(str, x, d)
+    for (y in x) z = z d x[y] (y < m ? d "\\" d : d)
+    return z
   }
-  $1 == "last-mirror" {
-    getline
-    print br "/" encodeURIComponent($1)
-    print $1
+  BEGIN {
+    FS = "\t"
+  }
+  {
+    if (/\t/)
+      x[y] = x[y] ? x[y] "," $2 : $2
+    else {
+      sub("-", "")
+      y = $0
+    }
+  }
+  END {
+    for (y in x) {
+      print y "=" quote(x[y])
+      print "e" y "=" quote(encodeURIComponent(x[y]))
+    }
   }
   ' /etc/setup/setup.rc > "$ec"
-  {
-    read -r cache
-    read mirror
-  } < "$ec"
-  cd "$cache"/"$arch"
+  . "$ec"
+  cd "$lastcache"/"$elastmirror"/"$arch"
 }
 
 no_targets() {
@@ -47,7 +57,7 @@ no_targets() {
 
 _update() {
   setwd
-  wget -N "$mirror"/"$arch"/setup.bz2
+  wget -N "$lastmirror"/"$arch"/setup.bz2
   bunzip2 < setup.bz2 > setup.ini
   echo 'Updated setup.ini'
 }
@@ -237,20 +247,20 @@ download() {
     drn=$(dirname "$nam")
     bsn=$(basename "$nam")
 
-    mkdir -p "$cache"/"$drn"
-    cd "$cache"/"$drn"
+    mkdir -p "$lastcache"/"$elastmirror"/"$drn"
+    cd "$lastcache"/"$elastmirror"/"$drn"
     if ! test -f "$bsn" || ! sha512sum -c <<eof
 $ckm $bsn
 eof
     then
-      wget -O "$bsn" "$mirror"/"$drn"/"$bsn"
+      wget -O "$bsn" "$lastmirror"/"$drn"/"$bsn"
       sha512sum -c <<eof || return
 $ckm $bsn
 eof
     fi
 
     tar tf "$bsn" | gzip > /etc/setup/"$pkg".lst.gz
-    cd "$cache"/"$arch"
+    cd "$lastcache"/"$elastmirror"/"$arch"
     echo "$drn" "$bsn" > /tmp/dwn
   done
 }
@@ -361,57 +371,54 @@ _remove() {
   if no_targets
   then return
   fi
-  cd /etc
   cygcheck awk sh bunzip2 grep gzip mv sed tar xz > /tmp/rmv.lst
   while read pkg
   do
 
-    if [ ! -f setup/"$pkg".lst.gz ]
+    if [ ! -f /etc/setup/"$pkg".lst.gz ]
     then
       echo "$pkg" 'package is not installed, skipping'
       continue
     fi
-    gzip -dk setup/"$pkg".lst.gz
-    awk '
-    NR == FNR {
+    gzip -dk /etc/setup/"$pkg".lst.gz
+    if awk '
+    BEGIN {
+      FS = "[/\\\\]"
+    }
+    FILENAME == ARGV[1] {
       if ($NF) ess[$NF]
-      next
     }
-    $NF in ess {
-      exit 1
+    FILENAME == ARGV[2] {
+      if ($NF in ess) exit 1
     }
-    ' FS='[/\\\\]' /tmp/rmv.lst setup/"$pkg".lst
-    esn=$?
-    if [ "$esn" = 0 ]
+    ' /tmp/rmv.lst /etc/setup/"$pkg".lst
     then
       echo 'Removing' "$pkg"
-      if [ -f preremove/"$pkg".sh ]
+      if [ -f /etc/preremove/"$pkg".sh ]
       then
-        preremove/"$pkg".sh
-        rm preremove/"$pkg".sh
+        /etc/preremove/"$pkg".sh
+        rm /etc/preremove/"$pkg".sh
       fi
       while read each
       do
         if [ -f /"$each" ]
         then rm /"$each"
         fi
-      done < setup/"$pkg".lst
-      rm -f setup/"$pkg".lst.gz postinstall/"$pkg".sh.done
+      done < /etc/setup/"$pkg".lst
+      rm -f /etc/setup/"$pkg".lst.gz /etc/postinstall/"$pkg".sh.done
       awk '
       BEGIN {ARGC = 2}
       $1 != ARGV[2]
-      ' setup/installed.db "$pkg" > /tmp/installed.db
-      mv /tmp/installed.db setup/installed.db
+      ' /etc/setup/installed.db "$pkg" > /tmp/installed.db
+      mv /tmp/installed.db /etc/setup/installed.db
       echo "$pkg" 'package removed'
-    fi
-    rm setup/"$pkg".lst
-    if [ "$esn" = 1 ]
-    then
+    else
       echo 'cannot remove package' "$pkg"
       continue
     fi
 
-  done </tmp/tar.lst
+  done < /tmp/tar.lst
+  rm -f /etc/setup/*.lst
 }
 
 _autoremove() {
@@ -482,7 +489,7 @@ _mirror() {
     }
     ' /tmp/tar.lst /etc/setup/setup.rc > /tmp/setup.rc
     mv /tmp/setup.rc /etc/setup/setup.rc
-    sed 'iMirror set to' /tmp/tar.lst
+    sed 'iMirror set to:' /tmp/tar.lst
   else
     awk '
     /last-mirror/ {
