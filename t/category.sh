@@ -1,10 +1,5 @@
-#!/bin/dash
-pause() {
-  echo 'Press any key to continue . . .'
-  read _
-  printf '\33c'
-}
-
-sage category
+#!/bin/dash -e
+. ./stdlib.sh
+xtrace sage category
 pause
-sage category Base
+xtrace sage category Base
