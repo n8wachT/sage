@@ -1,9 +1,10 @@
-#!/bin/dash
-sage cache alfa
+#!/bin/dash -e
+. ./stdlib.sh
+xtrace sage cache alfa
 echo
-sage cache
+xtrace sage cache
 echo
 
-sage cache 'D:\Documents'
+xtrace sage cache 'C:\ProgramData'
 echo
-sage cache
+xtrace sage cache
