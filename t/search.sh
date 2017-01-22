@@ -1,12 +1,5 @@
-#!/bin/dash
-pause() {
-  echo 'Press any key to continue . . .'
-  read _
-  printf '\33c'
-}
-
-sage search
-pause
-sage search bin/wk
-pause
-sage search bin/awk
+#!/bin/dash -e
+. ./stdlib.sh
+xtrace sage search
+xtrace sage search bin/wk
+xtrace sage search bin/awk
