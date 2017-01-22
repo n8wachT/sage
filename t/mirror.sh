@@ -1,9 +1,10 @@
-#!/bin/dash
-sage mirror alfa
+#!/bin/dash -e
+. ./stdlib.sh
+xtrace sage mirror alfa
 echo
-sage mirror
+xtrace sage mirror
 echo
 
-sage mirror http://cygwin.mirrors.hoobly.com/
+xtrace sage mirror http://cygwin.mirror.constant.com/
 echo
-sage mirror
+xtrace sage mirror
