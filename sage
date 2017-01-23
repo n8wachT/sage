@@ -1,14 +1,33 @@
 #!/bin/dash -e
 # -*- sh -*-
 
-wget() {
-  if command wget -h 2>&1 >/dev/null
+webreq() {
+  if wget -h >/dev/null 2>&1
   then
-    command wget "$@"
+    wget "$1"/"$2"
   else
-    echo 'wget is not installed, using lynx as fallback'
-    set "${*: -1}"
-    lynx -source "$1" > "${1##*/}"
+    ftp -Av ftp.gtlib.gatech.edu <<eof |
+hash
+get pub/cygwin/$2
+eof
+    awk '
+    function ceil(x,   y) {
+      y = int(x); return y < x ? y + 1 : y
+    }
+    BEGIN {
+      RS = "#"
+      FS = "[( ]"
+    }
+    NR == 1 {
+      q = $(NF - 1) / (2048 * 100)
+    }
+    NR % ceil(q) == 0 {
+      printf "%d%%\r", ++x
+    }
+    END {
+      print ""
+    }
+    '
   fi
 }
 
@@ -57,7 +76,7 @@ no_targets() {
 
 _update() {
   setwd
-  wget -N "$lastmirror"/"$arch"/setup.bz2
+  webreq "$lastmirror" "$arch"/setup.bz2
   bunzip2 < setup.bz2 > setup.ini
   echo 'Updated setup.ini'
 }
@@ -253,7 +272,7 @@ download() {
 $ckm $bsn
 eof
     then
-      wget -O "$bsn" "$lastmirror"/"$drn"/"$bsn"
+      webreq "$lastmirror" "$drn"/"$bsn"
       sha512sum -c <<eof || return
 $ckm $bsn
 eof
