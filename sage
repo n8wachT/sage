@@ -89,15 +89,15 @@ _category() {
   setwd
   awk '
   FILENAME == ARGV[1] {
-    query = $0
+    b = $0
   }
   FILENAME == ARGV[2] {
     if ($1 == "@")
-      pck = $2
+      q = $2
     if ($1 == "category:") {
       do
-        if ($NF == query) {
-          print pck
+        if ($NF == b) {
+          print q
         }
       while (--NF)
     }
