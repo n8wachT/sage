@@ -28,4 +28,4 @@ Steven Penny
 [br]:https://api.bountysource.com/badge/team?team_id=114003&style=raised
 [qu]:https://raw.githubusercontent.com/svnpenn/sage/master/sage.jpg
 [xr]:https://www.bountysource.com/teams/svnpenn
-[ya]:https://github.com/svnpenn/sage/blob/master/sage.txt
+[ya]:https://github.com/svnpenn/sage/blob/master/doc/sage.txt
