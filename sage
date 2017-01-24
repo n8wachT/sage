@@ -64,6 +64,7 @@ setwd() {
   }
   ' /etc/setup/setup.rc > "$ec"
   . "$ec"
+  mkdir -p "$lastcache"/"$elastmirror"/"$arch"
   cd "$lastcache"/"$elastmirror"/"$arch"
 }
 
