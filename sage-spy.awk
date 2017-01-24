@@ -28,21 +28,24 @@ function insertion_sort(arr,   x, y, z) {
 
 BEGIN {
   if (ARGC != 2) {
-    print "sage-spy.awk [timeout]"
+    OFS = RS
+    print "sage-spy.awk [timeout]", "", "try .5 for FTP"
     exit
   }
   FS = ";"
   while ("curl cygwin.com/mirrors.lst" | getline)
     q[++NR] = $1
   insertion_sort(q)
-  while (++z < 13) {
-    if (q[z] ~ /http/) {
-      printf "\t%s\r", q[z]
-      if (system("timeout " ARGV[1] " curl -Is " q[z] ">/dev/null"))
-        printf "\33[1;31m%s\33[m\n", "BAD"
-      else {
-        printf "\33[1;32m%s\33[m\n", "GOOD"
-      }
+  for (z = 1; http < 5 || ftp < 5; z++) {
+    printf "\t%s\r", q[z]
+    if (system("timeout " ARGV[1] " curl -Is " q[z] ">/dev/null"))
+      printf "\33[1;31m%s\33[m\n", "BAD"
+    else
+      printf "\33[1;32m%s\33[m\n", "GOOD"
+    if (q[z] ~ /^http/)
+      http++
+    else {
+      ftp++
     }
   }
 }
