@@ -143,7 +143,7 @@ _listfiles() {
     then download "$pkg"
     fi
     gzip -cd /etc/setup/"$pkg".lst.gz
-  done </tmp/tar.lst
+  done < /tmp/tar.lst
 }
 
 _show() {
@@ -237,12 +237,9 @@ _rdepends() {
 }
 
 _download() {
-  if no_targets
-  then return
-  fi
   while read pkg
   do download "$pkg"
-  done </tmp/tar.lst
+  done < /tmp/tar.lst
 }
 
 download() {
@@ -326,7 +323,7 @@ _searchall() {
   then return
   fi
   xr=$(mktemp /tmp/XXX)
-  read v </tmp/tar.lst
+  read v < /tmp/tar.lst
   wget -O "$xr" \
   'https://cygwin.com/cgi-bin2/package-grep.cgi?text=1&arch='"$arch"'&grep='"$v"
   awk '
