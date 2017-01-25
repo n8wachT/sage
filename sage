@@ -118,18 +118,16 @@ _list() {
 }
 
 _listall() {
-  if no_targets
-  then return
-  fi
   setwd
   awk '
-  FILENAME == ARGV[1] {
-    pkg = $0
+  BEGIN {
+    if (!getline q < ARGV[2]) exit
+    ARGC--
   }
-  FILENAME == ARGV[2] && $1 == "@" && $2 ~ pkg {
+  $1 == "@" && $2 ~ q {
     print $2
   }
-  ' /tmp/tar.lst setup.ini
+  ' setup.ini /tmp/tar.lst
 }
 
 _listfiles() {
