@@ -83,15 +83,14 @@ _update() {
 }
 
 _category() {
-  if no_targets
-  then return
-  fi
   setwd
   awk '
-  FILENAME == ARGV[1] {
-    b = $0
+  BEGIN {
+    if (!getline b < ARGV[2])
+      exit
+    ARGC--
   }
-  FILENAME == ARGV[2] {
+  {
     if ($1 == "@")
       q = $2
     if ($1 == "category:") {
@@ -102,7 +101,7 @@ _category() {
       while (--NF)
     }
   }
-  ' /tmp/tar.lst setup.ini
+  ' setup.ini /tmp/tar.lst
 }
 
 _list() {
