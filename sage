@@ -197,9 +197,6 @@ _depends() {
 }
 
 _rdepends() {
-  if no_targets
-  then return
-  fi
   setwd
   awk "$smartmatch"'
   function rtree(package,   ec, ro, ta) {
@@ -212,10 +209,11 @@ _rdepends() {
       rtree(reqs[package, ta], ec)
     delete branch[ec--]
   }
-  FILENAME == ARGV[1] {
-    xr = $0
+  BEGIN {
+    if (!getline xr < ARGV[2]) exit
+    ARGC--
   }
-  FILENAME == ARGV[2] {
+  {
     if ($1 == "@")
       ya = $2
     if ($1 == "requires:") {
@@ -227,7 +225,7 @@ _rdepends() {
   END {
     rtree(xr)
   }
-  ' /tmp/tar.lst setup.ini
+  ' setup.ini /tmp/tar.lst
 }
 
 _download() {
