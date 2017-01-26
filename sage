@@ -142,14 +142,16 @@ _listfiles() {
 _show() {
   setwd
   awk '
-  FILENAME == ARGV[1] {
-    x[$0]
+  BEGIN {
+    while (getline < ARGV[2]) x[$0]
+    if (!$0) exit
+    ARGC--
   }
-  FILENAME == ARGV[2] && $1 == "@" {
+  $1 == "@" {
     y = $2 in x ? 1 : 0
   }
   y
-  ' /tmp/tar.lst setup.ini
+  ' setup.ini /tmp/tar.lst
 }
 
 smartmatch='
