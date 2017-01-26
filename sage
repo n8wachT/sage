@@ -86,8 +86,7 @@ _category() {
   setwd
   awk '
   BEGIN {
-    if (!getline b < ARGV[2])
-      exit
+    if (!getline b < ARGV[2]) exit
     ARGC--
   }
   {
@@ -131,15 +130,12 @@ _listall() {
 }
 
 _listfiles() {
-  if no_targets
-  then return
-  fi
-  while read pkg
+  while read b
   do
-    if [ ! -f /etc/setup/"$pkg".lst.gz ]
-    then download "$pkg"
+    if [ ! -f /etc/setup/"$b".lst.gz ]
+    then download "$b"
     fi
-    gzip -cd /etc/setup/"$pkg".lst.gz
+    gzip -cd /etc/setup/"$b".lst.gz
   done < /tmp/tar.lst
 }
 
