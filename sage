@@ -160,9 +160,6 @@ function smartmatch(diamond, rough,   x, y) {
 '
 
 _depends() {
-  if no_targets
-  then return
-  fi
   setwd
   awk "$smartmatch"'
   function tree(package,   ec, ro, ta) {
@@ -175,10 +172,12 @@ _depends() {
       tree(reqs[package, ta], ec)
     delete branch[ec--]
   }
-  FILENAME == ARGV[1] {
-    xr[$0]
+  BEGIN {
+    while (getline < ARGV[2]) xr[$0]
+    if (!$0) exit
+    ARGC--
   }
-  FILENAME == ARGV[2] {
+  {
     if ($1 == "@")
       ya = $2
     if ($1 == "requires:") {
@@ -192,7 +191,7 @@ _depends() {
       tree(zu)
     }
   }
-  ' /tmp/tar.lst setup.ini
+  ' setup.ini /tmp/tar.lst
 }
 
 _rdepends() {
