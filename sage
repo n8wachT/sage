@@ -377,19 +377,16 @@ _install() {
 }
 
 _remove() {
-  if no_targets
-  then return
-  fi
   cygcheck awk sh bunzip2 grep gzip mv sed tar xz > /tmp/rmv.lst
-  while read pkg
+  while read q
   do
 
-    if [ ! -f /etc/setup/"$pkg".lst.gz ]
+    if [ ! -f /etc/setup/"$q".lst.gz ]
     then
-      echo "$pkg" 'package is not installed, skipping'
+      echo "$q" 'package is not installed, skipping'
       continue
     fi
-    gzip -dk /etc/setup/"$pkg".lst.gz
+    gzip -dk /etc/setup/"$q".lst.gz
     if awk '
     BEGIN {
       FS = "[/\\\\]"
@@ -400,29 +397,29 @@ _remove() {
     FILENAME == ARGV[2] {
       if ($NF in ess) exit 1
     }
-    ' /tmp/rmv.lst /etc/setup/"$pkg".lst
+    ' /tmp/rmv.lst /etc/setup/"$q".lst
     then
-      echo 'Removing' "$pkg"
-      if [ -f /etc/preremove/"$pkg".sh ]
+      echo 'Removing' "$q"
+      if [ -f /etc/preremove/"$q".sh ]
       then
-        /etc/preremove/"$pkg".sh
-        rm /etc/preremove/"$pkg".sh
+        /etc/preremove/"$q".sh
+        rm /etc/preremove/"$q".sh
       fi
       while read each
       do
         if [ -f /"$each" ]
         then rm /"$each"
         fi
-      done < /etc/setup/"$pkg".lst
-      rm -f /etc/setup/"$pkg".lst.gz /etc/postinstall/"$pkg".sh.done
+      done < /etc/setup/"$q".lst
+      rm -f /etc/setup/"$q".lst.gz /etc/postinstall/"$q".sh.done
       awk '
       BEGIN {ARGC = 2}
       $1 != ARGV[2]
-      ' /etc/setup/installed.db "$pkg" > /tmp/installed.db
+      ' /etc/setup/installed.db "$q" > /tmp/installed.db
       mv /tmp/installed.db /etc/setup/installed.db
-      echo "$pkg" 'package removed'
+      echo "$q" 'package removed'
     else
-      echo 'cannot remove package' "$pkg"
+      echo 'cannot remove package' "$q"
       continue
     fi
 
