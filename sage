@@ -313,13 +313,13 @@ resolve_deps() {
 }
 
 _searchall() {
-  if no_targets
+  if ! read q < /tmp/tar.lst
   then return
   fi
   xr=$(mktemp /tmp/XXX)
-  read v < /tmp/tar.lst
-  wget -O "$xr" \
-  'https://cygwin.com/cgi-bin2/package-grep.cgi?text=1&arch='"$arch"'&grep='"$v"
+  wget -O "$xr" -i - <<eof
+https://cygwin.com/cgi-bin2/package-grep.cgi?text=1&arch=$arch&grep=$q
+eof
   awk '
   BEGIN {
     FS = "-[[:digit:]]"
@@ -475,7 +475,7 @@ _autoremove() {
       }
     }
   }
-  ' /etc/setup/installed.db setup.ini | sage remove
+  ' /etc/setup/installed.db setup.ini
 }
 
 _mirror() {
