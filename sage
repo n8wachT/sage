@@ -134,7 +134,7 @@ _listfiles() {
   then return
   fi
   setwd
-  find -name "$b"'-*' |
+  find .. -name "$b"'-*' |
   awk '
   END {
     system("tar tf " $0)
