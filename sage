@@ -415,11 +415,17 @@ _remove() {
       done < /etc/setup/"$q".lst
       rm -f /etc/setup/"$q".lst.gz /etc/postinstall/"$q".sh.done
       awk '
-      BEGIN {ARGC = 2}
-      $1 != ARGV[2]
-      ' /etc/setup/installed.db "$q" > /tmp/installed.db
-      mv /tmp/installed.db /etc/setup/installed.db
-      echo "$q" 'package removed'
+      BEGIN {
+        ARGC--
+      }
+      $1 != ARGV[2] {
+        br = br ? br RS $0 : $0
+      }
+      END {
+        print br > ARGV[1]
+        print ARGV[2] " package removed"
+      }
+      ' /etc/setup/installed.db "$q"
     else
       echo 'cannot remove package' "$q"
       continue
