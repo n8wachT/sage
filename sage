@@ -229,8 +229,8 @@ _rdepends() {
 }
 
 _download() {
-  while read pkg
-  do download "$pkg"
+  while read b
+  do download "$b"
   done < /tmp/tar.lst
 }
 
@@ -240,7 +240,7 @@ download() {
 
   awk '
   BEGIN {
-    ARGC = 2
+    ARGC--
   }
   $1 == "@" && $2 == ARGV[2] {
     y = 1
