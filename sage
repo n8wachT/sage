@@ -130,13 +130,16 @@ _listall() {
 }
 
 _listfiles() {
-  while read b
-  do
-    if [ ! -f /etc/setup/"$b".lst.gz ]
-    then download "$b"
-    fi
-    gzip -cd /etc/setup/"$b".lst.gz
-  done < /tmp/tar.lst
+  if ! read b < /tmp/tar.lst
+  then return
+  fi
+  setwd
+  find -name "$b"'-*' |
+  awk '
+  END {
+    system("tar tf " $0)
+  }
+  '
 }
 
 _show() {

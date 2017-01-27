@@ -47,8 +47,7 @@ OPERATIONS
     Display all packages that are members of a named category.
 
   listfiles
-    List all files owned by a given package. Multiple packages can be specified
-    on the command line.
+    List all files owned by a given package.
 
   search
     Search for downloaded packages that own the specified file(s). The path can
