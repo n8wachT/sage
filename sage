@@ -290,24 +290,26 @@ _search() {
 resolve_deps() {
   setwd
   awk '
-  function e(file) {
+  function exists(file) {
     return getline < file < 0 ? 0 : 1
   }
-  FILENAME == ARGV[1] {
-    ch[$NF]
+  BEGIN {
+    while (getline < ARGV[2]) ch[$NF]
+    if (!$0) exit
+    ARGC--
   }
-  FILENAME == ARGV[2] {
+  {
     if ($1 == "@")
       br = $2
     if ($1 == "install:" && br in ch) {
       delete ch[br]
       de = $2
-      if (e("../" de) && e("/etc/setup/" br ".lst.gz"))
+      if (exists("../" de) && exists("/etc/setup/" br ".lst.gz"))
         next
       print br
     }
   }
-  ' "$1" setup.ini
+  ' setup.ini "$1"
 }
 
 _searchall() {
@@ -332,9 +334,6 @@ _searchall() {
 }
 
 _install() {
-  if no_targets
-  then return
-  fi
   local pkg script
   j=$(mktemp)
   if [ "$nodeps" ]
