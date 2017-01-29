@@ -495,30 +495,29 @@ _autoremove() {
 }
 
 _mirror() {
-  if [ -s /tmp/tar.lst ]
-  then
-    awk '
-    FILENAME == ARGV[1] {
-      pks = $0
-    }
-    FILENAME == ARGV[2] {
-      print
-      if (/last-mirror/) {
-        getline
-        print "\t" pks
-      }
-    }
-    ' /tmp/tar.lst /etc/setup/setup.rc > /tmp/setup.rc
-    mv /tmp/setup.rc /etc/setup/setup.rc
-    sed 'iMirror set to:' /tmp/tar.lst
-  else
-    awk '
-    /last-mirror/ {
-      getline
+  awk '
+  BEGIN {
+    getline x < ARGV[2]
+    ARGC--
+  }
+  {
+    y = y ? y RS $0 : $0
+  }
+  /last-mirror/ {
+    getline
+    if (x)
+      y = y "\n\t" x
+    else {
       print $1
     }
-    ' /etc/setup/setup.rc
-  fi
+  }
+  END {
+    if (x) {
+      print y > ARGV[1]
+      print "Mirror set to:\n" x
+    }
+  }
+  ' /etc/setup/setup.rc /tmp/tar.lst
 }
 
 _cache() {
