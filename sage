@@ -31,8 +31,7 @@ eof
   fi
 }
 
-setwd() {
-  ec=$(mktemp)
+getwd() {
   awk '
   function encodeURIComponent(str,   g, q, y, z) {
     while (g++ < 125) q[sprintf("%c", g)] = g
@@ -62,8 +61,16 @@ setwd() {
       print "e" y "=" quote(encodeURIComponent(x[y]))
     }
   }
-  ' /etc/setup/setup.rc > "$ec"
-  . "$ec"
+  ' /etc/setup/setup.rc > /etc/setup/setup.sh
+}
+
+setwd() {
+  if [ ! -f /etc/setup/setup.sh ] ||
+    find /etc/setup/setup.sh -newer /etc/setup/setup.rc -exec false {} +
+  then
+    getwd
+  fi
+  . /etc/setup/setup.sh
   mkdir -p "$lastcache"/"$elastmirror"/"$arch"
   cd "$lastcache"/"$elastmirror"/"$arch"
 }
