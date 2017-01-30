@@ -521,26 +521,29 @@ _mirror() {
 }
 
 _cache() {
-  if [ -s /tmp/tar.lst ]
-  then
-    ya=$(cygpath -aiwf /tmp/tar.lst | sed 's \\ \\\\ g')
-    awk '
-    1
-    /last-cache/ {
-      getline
-      print "\t" ya
-    }
-    ' ya="$ya" /etc/setup/setup.rc > /tmp/setup.rc
-    mv /tmp/setup.rc /etc/setup/setup.rc
-    echo 'Cache set to' "$ya"
-  else
-    awk '
-    /last-cache/ {
-      getline
+  awk '
+  BEGIN {
+    "cygpath -aiwf " ARGV[2] | getline x
+    ARGC--
+  }
+  {
+    z = z ? z RS $0 : $0
+  }
+  /last-cache/ {
+    getline
+    if (x)
+      z = z "\n\t" x
+    else {
       print $1
     }
-    ' /etc/setup/setup.rc
-  fi
+  }
+  END {
+    if (x) {
+      print z > ARGV[1]
+      print "Cache set to:\n" x
+    }
+  }
+  ' /etc/setup/setup.rc /tmp/tar.lst
 }
 
 > /tmp/tar.lst
