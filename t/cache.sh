@@ -5,6 +5,11 @@ echo
 xtrace sage cache
 echo
 
+xtrace sage cache ''
+echo
+xtrace sage cache
+echo
+
 xtrace sage cache 'C:\ProgramData'
 echo
 xtrace sage cache
