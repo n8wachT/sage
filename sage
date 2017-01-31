@@ -2,13 +2,15 @@
 # -*- sh -*-
 
 webreq() {
+  install -D /dev/null "$2"
   if wget -h >/dev/null 2>&1
   then
-    wget "$1"/"$2"
+    wget -O "$2" "$1"/"$2"
   else
-    ftp -Av ftp.gtlib.gatech.edu <<eof |
+    ftp -Av mirror.nexcess.net <<eof |
 hash
-get pub/cygwin/$2
+binary
+get cygwin/$2 $2
 eof
     awk '
     function ceil(x,   y) {
@@ -256,32 +258,20 @@ download() {
     y = 1
   }
   $1 == "install:" && y {
-    print $2, $4
+    print $4, $2
     exit
   }
-  ' setup.ini "$pkg" |
-  while read nam ckm
-  do
+  ' setup.ini "pkg" > sha512.sum
+  read sha path < sha512.sum
+  mv sha512.sum ..
+  cd ..
+  if ! test -f "$path" || ! sha512sum -c sha512.sum
+  then
+    webreq "$lastmirror" "$path"
+    sha512sum -c sha512.sum || return
+  fi
 
-    drn=$(dirname "$nam")
-    bsn=$(basename "$nam")
-
-    mkdir -p "$lastcache"/"$elastmirror"/"$drn"
-    cd "$lastcache"/"$elastmirror"/"$drn"
-    if ! test -f "$bsn" || ! sha512sum -c <<eof
-$ckm $bsn
-eof
-    then
-      webreq "$lastmirror" "$drn"/"$bsn"
-      sha512sum -c <<eof || return
-$ckm $bsn
-eof
-    fi
-
-    tar tf "$bsn" | gzip > /etc/setup/"$pkg".lst.gz
-    cd "$lastcache"/"$elastmirror"/"$arch"
-    echo "$drn" "$bsn" > /tmp/dwn
-  done
+  tar tf "$path" | gzip > /etc/setup/"pkg".lst.gz
 }
 
 _search() {
@@ -354,9 +344,8 @@ _install() {
   while read pkg
   do
     download "$pkg"
-    read drn bsn < /tmp/dwn
     echo 'Unpacking...'
-    tar -x -C / -f ../"$drn"/"$bsn"
+    tar -x -C / -f "$path"
     # update the package database
 
     awk '
@@ -371,7 +360,7 @@ _install() {
     END {
       if (!q) print ARGV[2], ARGV[3], 0
     }
-    ' /etc/setup/installed.db "$pkg" "$bsn" > "$j"
+    ' /etc/setup/installed.db "$pkg" "$path" > "$j"
     mv "$j" /etc/setup/installed.db
 
   done
