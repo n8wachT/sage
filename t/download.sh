@@ -1,4 +1,5 @@
-#!/bin/dash -e
+#!/bin/dash
+# dont use -e, we are expecting some of these to fail
 . ./stdlib.sh
 
 for q in /usr/local/http*/x86_64/release/make/make-*.tar.xz
