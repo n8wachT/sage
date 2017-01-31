@@ -261,7 +261,7 @@ download() {
     print $4, $2
     exit
   }
-  ' setup.ini "pkg" > sha512.sum
+  ' setup.ini "$pkg" > sha512.sum
   read sha path < sha512.sum
   mv sha512.sum ..
   cd ..
@@ -271,7 +271,7 @@ download() {
     sha512sum -c sha512.sum || return
   fi
 
-  tar tf "$path" | gzip > /etc/setup/"pkg".lst.gz
+  tar tf "$path" | gzip > /etc/setup/"$pkg".lst.gz
 }
 
 _search() {
@@ -349,19 +349,25 @@ _install() {
     # update the package database
 
     awk '
+    function insertion_sort(arr,   x, y, z) {
+      for (x in arr) {
+        y = arr[x]; z = x - 1
+        while (z && arr[z] > y) {arr[z + 1] = arr[z]; z--} arr[z + 1] = y
+      }
+    }
     BEGIN {
       ARGC = 2
     }
-    NR > 1 && ARGV[2] < $1 && !q {
-      print ARGV[2], ARGV[3], 0
-      q = 1
-    }
-    1
+    NR == 1 {qu = $0}
+    NR != 1 {ro[$1] = $2 FS $3}
     END {
-      if (!q) print ARGV[2], ARGV[3], 0
+      ro[ARGV[2]] = ARGV[3] FS 0
+      for (xr in ro) ya[++zu] = xr FS ro[xr]
+      insertion_sort(ya)
+      for (xr in ya) qu = qu RS ya[xr]
+      print qu > ARGV[1]
     }
-    ' /etc/setup/installed.db "$pkg" "$path" > "$j"
-    mv "$j" /etc/setup/installed.db
+    ' /etc/setup/installed.db "$pkg" "$path"
 
   done
   # run all postinstall scripts
