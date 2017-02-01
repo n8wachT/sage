@@ -14,7 +14,7 @@ xtrace rm -fv "$q"
 xtrace sage download make
 
 # exist=1 sha=0
-xtrace truncate -s0 "$q"
+xtrace dd if=/dev/null of="$q"
 xtrace sage download make
 
 # exist=1 sha=1
