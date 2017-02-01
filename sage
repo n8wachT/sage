@@ -146,7 +146,7 @@ _listfiles() {
   find .. -name "$b"'-*' |
   awk '
   END {
-    system("tar tf " $0)
+    system("tar -tf " $0)
   }
   '
 }
@@ -271,7 +271,7 @@ download() {
     sha512sum -c sha512.sum || return
   fi
 
-  tar tf "$path" | gzip > /etc/setup/"$pkg".lst.gz
+  tar -tf "$path" | gzip > /etc/setup/"$pkg".lst.gz
 }
 
 _search() {
