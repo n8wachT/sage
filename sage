@@ -119,8 +119,8 @@ _list() {
     getline x < ARGV[2]
   }
   NR > 1 && $1 ~ x {
-    split($2, y, /\.[[:alpha:]]/)
-    print y[1]
+    z = split($2, y, "/")
+    print substr(y[z], 1, match(y[z], /\.[[:alpha:]]/) - 1)
   }
   ' /etc/setup/installed.db /tmp/tar.lst
 }
