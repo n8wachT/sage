@@ -146,7 +146,7 @@ _listfiles() {
   find .. -name "$b"'-*' |
   awk '
   END {
-    system("tar -tf " $0)
+    system("tar --list --file " $0)
   }
   '
 }
