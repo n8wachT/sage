@@ -86,8 +86,9 @@ no_targets() {
 
 _update() {
   setwd
-  webreq "$lastmirror" "$arch"/setup.bz2
-  bunzip2 < setup.bz2 > setup.ini
+  cd ..
+  webreq "$lastmirror" "$arch"/setup.xz
+  xzdec < "$arch"/setup.xz > "$arch"/setup.ini
   echo 'Updated setup.ini'
 }
 
