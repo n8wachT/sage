@@ -1,5 +1,5 @@
 #!/bin/dash -e
-. ./stdlib.sh
+. ./libsage.sh
 
 q=/etc/setup/make.lst.gz
 for y in /usr/local/http*/x86_64/release/make/make-*.tar.xz

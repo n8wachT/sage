@@ -1,5 +1,5 @@
 #!/bin/dash -e
-. ./stdlib.sh
+. ./libsage.sh
 
 # 0 0
 rm -fv /usr/local/http*/x86_64/setup*

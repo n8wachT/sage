@@ -1,5 +1,5 @@
 #!/bin/dash -e
-. ./stdlib.sh
+. ./libsage.sh
 xtrace sage depends
 pause
 xtrace sage depends mak

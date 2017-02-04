@@ -1,5 +1,5 @@
 #!/bin/dash -e
-. ./stdlib.sh
+. ./libsage.sh
 
 xtrace sage searchall
 xtrace sage searchall usr/bin/awj

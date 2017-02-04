@@ -1,5 +1,5 @@
 #!/bin/dash -e
-. ./stdlib.sh
+. ./libsage.sh
 xtrace sage list
 pause
 xtrace sage list ^g

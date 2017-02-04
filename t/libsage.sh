@@ -1,5 +1,5 @@
-#!/bin/dash
-. stdlib.sh
+# github.com/svnpenn/stdlib
+. /usr/share/sh/libstd.sh
 
 pause() {
   printf '\nPress Enter to continue...\n'
