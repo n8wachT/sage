@@ -1,5 +1,4 @@
 #!/usr/local/bin/stdlib awk
-# github.com/svnpenn/stdlib
 BEGIN {
   if (ARGC < 3) {
     print "sage-date.awk [mirror] [packages]"

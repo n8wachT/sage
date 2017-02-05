@@ -1,5 +1,4 @@
 #!/usr/local/bin/stdlib sh
-# github.com/svnpenn/stdlib
 j=$(mktemp)
 sage category Base | xargs sage depends | awk '$0=$NF' | sort -u > "$j"
 sage list | awk '$0=$1' FS='-[[:digit:]]' | grep -Fvxf "$j" | xargs sage remove

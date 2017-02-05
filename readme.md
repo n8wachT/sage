@@ -15,6 +15,10 @@ Install
 
 3. Run `./install.sh`
 
+Requirements
+------------
+[StdLib][ec]
+
 Links
 ---------------------
 - [Documentation][ya]
@@ -29,3 +33,4 @@ Steven Penny
 [qu]:https://raw.githubusercontent.com/svnpenn/sage/master/sage.jpg
 [xr]:https://www.bountysource.com/teams/svnpenn
 [ya]:https://github.com/svnpenn/sage/blob/master/doc/sage.txt
+[ec]:https://github.com/svnpenn/stdlib
