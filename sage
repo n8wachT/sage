@@ -578,5 +578,5 @@ then
   readonly arch=$(uname -m | sed s.i6.x.)
   _"$command"
 else
-  cat /usr/share/doc/sage/sage.txt
+  cat /usr/local/share/sage.txt
 fi
