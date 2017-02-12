@@ -35,10 +35,10 @@ eof
 
 getwd() {
   awk '
-  function encodeURIComponent(str,   g, q, y, z) {
+  function uri_escape(str,   g, q, y, z) {
     while (g++ < 125) q[sprintf("%c", g)] = g
     while (g = substr(str, ++y, 1))
-      z = z (g ~ /[[:alnum:]_.!~*\47()-]/ ? g : sprintf("%%%02X", q[g]))
+      z = z (g ~ /[[:alnum:]_.!~*\47()-]/ ? g : "%" sprintf("%02X", q[g]))
     return z
   }
   function quote(str,   d, m, x, y, z) {
@@ -60,7 +60,7 @@ getwd() {
   END {
     for (y in x) {
       print y "=" quote(x[y])
-      print "e" y "=" quote(encodeURIComponent(x[y]))
+      print "e" y "=" quote(uri_escape(x[y]))
     }
   }
   ' /etc/setup/setup.rc > /etc/setup/setup.sh
