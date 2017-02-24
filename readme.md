@@ -15,14 +15,14 @@ Install
 
 3. Run `./install.sh`
 
-Requirements
-------------
-[StdLib][ec]
-
 Links
 ---------------------
 - [Documentation][ya]
 - [svnpenn - Bountysource][xr]
+
+Thanks
+------------
+[StdLib][ec]
 
 Author
 ------------
