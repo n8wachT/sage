@@ -335,16 +335,14 @@ eof
 }
 
 _install() {
-  local pkg script
-  j=$(mktemp)
   if [ "$nodeps" ]
   then cat /tmp/tar.lst
   else _depends
   fi |
   resolve_deps - |
-  while read pkg
+  while read fox
   do
-    download "$pkg"
+    download "$fox"
     echo 'Unpacking...'
     tar -x -C / -f "$path"
     # update the package database
@@ -368,16 +366,16 @@ _install() {
       for (xr in ya) qu = qu RS ya[xr]
       print qu > ARGV[1]
     }
-    ' /etc/setup/installed.db "$pkg" "$path"
+    ' /etc/setup/installed.db "$fox" "$path"
 
   done
   # run all postinstall scripts
   set /etc/postinstall/*.sh
   [ -e "$1" ] || shift
-  for script do
-    echo 'Running' "$script"
-    "$script"
-    mv "$script" "$script".done
+  for nov do
+    echo 'Running' "$nov"
+    "$nov"
+    mv "$nov" "$nov".done
   done
 }
 
