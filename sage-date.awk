@@ -1,4 +1,4 @@
-#!/usr/local/bin/stdlib awk
+#!/usr/local/bin/awklib -f
 BEGIN {
   if (ARGC < 3) {
     print "sage-date.awk [mirror] [packages]"
