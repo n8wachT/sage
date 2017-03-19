@@ -1,6 +1,35 @@
 #!/bin/dash -e
 # -*- sh -*-
 
+stdlib='
+function ceil(x,   y) {
+  y = int(x); return y < x ? y + 1 : y
+}
+function exists(file) {
+  return getline < file < 0 ? 0 : 1
+}
+function insertion_sort(arr,   x, y, z) {
+  for (x in arr) {
+    y = arr[x]; z = x - 1
+    while (z && arr[z] > y) {arr[z + 1] = arr[z]; z--} arr[z + 1] = y
+  }
+}
+function smartmatch(diamond, rough,   x, y) {
+  for (x in rough) y[rough[x]]
+  return diamond in y
+}
+function quote(str,   d, m, x, y, z) {
+  d = "\47"; m = split(str, x, d)
+  for (y in x) z = z d x[y] (y < m ? d "\\" d : d)
+  return z
+}
+function uri_escape(str,   g, q, y, z) {
+  while (g++ < 125) q[sprintf("%c", g)] = g
+  while (g = substr(str, ++y, 1))
+    z = z (g ~ /[[:alnum:]_.!~*\47()-]/ ? g : "%" sprintf("%02X", q[g]))
+  return z
+}
+'
 webreq() {
   install -D /dev/null "$2"
   if wget -h >/dev/null 2>&1
@@ -12,10 +41,7 @@ hash
 binary
 get cygwin/$2 $2
 eof
-    awk '
-    function ceil(x,   y) {
-      y = int(x); return y < x ? y + 1 : y
-    }
+    awk "$stdlib"'
     BEGIN {
       RS = "#"
       FS = "[( ]"
@@ -34,18 +60,7 @@ eof
 }
 
 getwd() {
-  awk '
-  function uri_escape(str,   g, q, y, z) {
-    while (g++ < 125) q[sprintf("%c", g)] = g
-    while (g = substr(str, ++y, 1))
-      z = z (g ~ /[[:alnum:]_.!~*\47()-]/ ? g : "%" sprintf("%02X", q[g]))
-    return z
-  }
-  function quote(str,   d, m, x, y, z) {
-    d = "\47"; m = split(str, x, d)
-    for (y in x) z = z d x[y] (y < m ? d "\\" d : d)
-    return z
-  }
+  awk "$stdlib"'
   BEGIN {
     FS = "\t"
   }
@@ -167,13 +182,6 @@ _show() {
   ' setup.ini /tmp/tar.lst
 }
 
-smartmatch='
-function smartmatch(diamond, rough,   x, y) {
-  for (x in rough) y[rough[x]]
-  return diamond in y
-}
-'
-
 _depends() {
   setwd
   awk "$smartmatch"'
@@ -290,10 +298,7 @@ _search() {
 
 resolve_deps() {
   setwd
-  awk '
-  function exists(file) {
-    return getline < file < 0 ? 0 : 1
-  }
+  awk "$stdlib"'
   BEGIN {
     while (getline < ARGV[2]) ch[$NF]
     if (!$0) exit
@@ -347,13 +352,7 @@ _install() {
     tar -x -C / -f "$path"
     # update the package database
 
-    awk '
-    function insertion_sort(arr,   x, y, z) {
-      for (x in arr) {
-        y = arr[x]; z = x - 1
-        while (z && arr[z] > y) {arr[z + 1] = arr[z]; z--} arr[z + 1] = y
-      }
-    }
+    awk "$stdlib"'
     BEGIN {
       ARGC = 2
     }
