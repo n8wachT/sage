@@ -30,6 +30,7 @@ function uri_escape(str,   g, q, y, z) {
   return z
 }
 '
+
 webreq() {
   install -D /dev/null "$2"
   if wget -h >/dev/null 2>&1
