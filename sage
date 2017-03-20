@@ -82,9 +82,13 @@ getwd() {
   ' /etc/setup/setup.rc > /etc/setup/setup.sh
 }
 
+newer() {
+  find "$2" -newer "$1" -exec false {} +
+}
+
 setwd() {
   if [ ! -f /etc/setup/setup.sh ] ||
-    find /etc/setup/setup.sh -newer /etc/setup/setup.rc -exec false {} +
+    newer /etc/setup/setup.rc /etc/setup/setup.sh
   then
     getwd
   fi
