@@ -185,7 +185,7 @@ _show() {
 
 _depends() {
   setwd
-  awk "$smartmatch"'
+  awk "$stdlib"'
   function tree(package,   ec, ro, ta) {
     if (smartmatch(package, branch))
       return
@@ -220,7 +220,7 @@ _depends() {
 
 _rdepends() {
   setwd
-  awk "$smartmatch"'
+  awk "$stdlib"'
   function rtree(package,   ec, ro, ta) {
     if (smartmatch(package, branch))
       return
