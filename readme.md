@@ -31,6 +31,6 @@ Steven Penny
 <!-- protocol is needed for image to render -->
 [br]:https://api.bountysource.com/badge/team?team_id=114003&style=raised
 [ec]:https://github.com/svnpenn/stdlib
-[qu]:http://svnpenn.github.io/sage/sage.jpg
+[qu]:https://svnpenn.github.io/sage/sage.jpg
 [xr]:https://www.bountysource.com/teams/svnpenn
-[ya]:https://github.com/svnpenn/sage/blob/master/docs/sage.txt
+[ya]:https://svnpenn.github.io/sage/sage.txt
