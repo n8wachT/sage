@@ -2,8 +2,9 @@
 # -*- sh -*-
 
 stdlib='
-function ceil(x,   y) {
-  y = int(x); return y < x ? y + 1 : y
+function ceil(num,   x) {
+  x = trunc(num)
+  return x < num ? x + 1 : x
 }
 function exists(file) {
   return getline < file < 0 ? 0 : 1
@@ -22,6 +23,9 @@ function quote(str,   d, m, x, y, z) {
   d = "\47"; m = split(str, x, d)
   for (y in x) z = z d x[y] (y < m ? d "\\" d : d)
   return z
+}
+function trunc(num) {
+  return int(num)
 }
 function uri_escape(str,   g, q, y, z) {
   while (g++ < 125) q[sprintf("%c", g)] = g
