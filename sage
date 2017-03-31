@@ -2,6 +2,10 @@
 # -*- sh -*-
 
 stdlib='
+function arr_ind(rough, diamond,  x, y) {
+  for (x in rough) if (rough[x] == diamond) {y = 1; break}
+  return y ? x : 0
+}
 function ceil(num,   x) {
   x = trunc(num)
   return x < num ? x + 1 : x
@@ -14,10 +18,6 @@ function insertion_sort(arr,   x, y, z) {
     y = arr[x]; z = x - 1
     while (z && arr[z] > y) {arr[z + 1] = arr[z]; z--} arr[z + 1] = y
   }
-}
-function smartmatch(diamond, rough,   x, y) {
-  for (x in rough) y[rough[x]]
-  return diamond in y
 }
 function quote(str,   d, m, x, y, z) {
   d = "\47"; m = split(str, x, d)
@@ -199,7 +199,7 @@ _depends() {
   setwd
   awk "$stdlib"'
   function tree(package,   ec, ro, ta) {
-    if (smartmatch(package, branch))
+    if (arr_ind(branch, package))
       return
     branch[++ec] = package
     for (ro in branch)
@@ -234,7 +234,7 @@ _rdepends() {
   setwd
   awk "$stdlib"'
   function rtree(package,   ec, ro, ta) {
-    if (smartmatch(package, branch))
+    if (arr_ind(branch, package))
       return
     branch[++ec] = package
     for (ro in branch)
