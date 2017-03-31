@@ -1,8 +1,8 @@
-#!/usr/bin/awk -f
+#!/usr/local/bin/awklib -f
 function dom(url,   q, x, y, z) {
   split(url, q, "/")
   x = split(q[3], y, ".")
-  if (length(y[x]) != 3)
+  if (str_len(y[x]) != 3)
     z = "Ω"
   do
     z = z y[x]
@@ -10,11 +10,7 @@ function dom(url,   q, x, y, z) {
   return z
 }
 
-function exists(file) {
-  return getline < file < 0 ? 0 : 1
-}
-
-function insertion_sort(arr,   x, y, z) {
+function insertion_sort_c(arr,   x, y, z) {
   for (x in arr) {
     y = arr[x]
     z = x - 1
