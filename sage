@@ -13,7 +13,7 @@ function ceil(num,   x) {
 function exists(file) {
   return getline < file < 0 ? 0 : 1
 }
-function insertion_sort(arr,   x, y, z) {
+function arr_sort(arr,   x, y, z) {
   for (x in arr) {
     y = arr[x]; z = x - 1
     while (z && arr[z] > y) {arr[z + 1] = arr[z]; z--} arr[z + 1] = y
@@ -374,7 +374,7 @@ _install() {
     END {
       ro[ARGV[2]] = ARGV[3] FS 0
       for (xr in ro) ya[++zu] = xr FS ro[xr]
-      insertion_sort(ya)
+      arr_sort(ya)
       for (xr in ya) qu = qu RS ya[xr]
       print qu > ARGV[1]
     }

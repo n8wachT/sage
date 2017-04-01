@@ -1,44 +1,33 @@
 #!/usr/local/bin/awklib -f
-function dom(url,   q, x, y, z) {
-  split(url, q, "/")
-  x = split(q[3], y, ".")
-  if (str_len(y[x]) != 3)
-    z = "Ω"
+function dom(url,   br, ch, pa, qu) {
+  split(url, br, "/")
+  ch = split(br[3], pa, ".")
+  if (str_len(pa[ch]) != 3)
+    qu = "Ω"
   do
-    z = z y[x]
-  while (--x)
-  return z
-}
-
-function insertion_sort_c(arr,   x, y, z) {
-  for (x in arr) {
-    y = arr[x]
-    z = x - 1
-    while (z && dom(arr[z]) > dom(y)) {
-      arr[z + 1] = arr[z]
-      z--
-    }
-    arr[z + 1] = y
-  }
+    qu = qu pa[ch]
+  while (--ch)
+  return qu
 }
 
 BEGIN {
   if (ARGC != 2) {
     OFS = RS
-    print "sage-spy.awk [timeout]", "", "try .5 for FTP"
+    print "sage-spy.awk <timeout>", "", "try .5 for FTP"
     exit
   }
   FS = ";"
   while ("curl cygwin.com/mirrors.lst" | getline)
-    q[++NR] = $1
-  insertion_sort(q)
-  for (z = 1; http < 5 || ftp < 5; z++) {
-    printf "\t%s\r", q[z]
-    if (system("timeout " ARGV[1] " curl -Is " q[z] ">/dev/null"))
+    xr[++NR] = dom($1) FS $1
+  arr_sort(xr)
+  for (ya = 1; http < 5 || ftp < 5; ya++) {
+    split(xr[ya], zu)
+    printf "%4s %.75s\r", "", zu[2]
+    if (system("timeout " ARGV[1] " curl -Is " zu[2] ">/dev/null"))
       printf "\33[1;31m%s\33[m\n", "BAD"
     else
       printf "\33[1;32m%s\33[m\n", "GOOD"
-    if (q[z] ~ /^http/)
+    if (zu[2] ~ /^http/)
       http++
     else {
       ftp++
