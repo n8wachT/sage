@@ -565,7 +565,7 @@ do
     ;;
 
     --version)
-      echo 1.9.0
+      echo 2.0.0
       exit
     ;;
 
