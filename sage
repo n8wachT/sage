@@ -2,7 +2,7 @@
 # -*- sh -*-
 
 stdlib='
-function arr_ind(rough, diamond,  x, y) {
+function arr_index(rough, diamond,  x, y) {
   for (x in rough) if (rough[x] == diamond) {y = 1; break}
   return y ? x : 0
 }
@@ -199,7 +199,7 @@ _depends() {
   setwd
   awk "$stdlib"'
   function tree(package,   ec, ro, ta) {
-    if (arr_ind(branch, package))
+    if (arr_index(branch, package))
       return
     branch[++ec] = package
     for (ro in branch)
@@ -234,7 +234,7 @@ _rdepends() {
   setwd
   awk "$stdlib"'
   function rtree(package,   ec, ro, ta) {
-    if (arr_ind(branch, package))
+    if (arr_index(branch, package))
       return
     branch[++ec] = package
     for (ro in branch)
