@@ -10,7 +10,7 @@ function ceil(num,   x) {
   x = trunc(num)
   return x < num ? x + 1 : x
 }
-function exists(file) {
+function file_exist(file) {
   return getline < file < 0 ? 0 : 1
 }
 function arr_sort(arr,   x, y, z) {
@@ -323,7 +323,7 @@ resolve_deps() {
     if ($1 == "install:" && br in ch) {
       delete ch[br]
       de = $2
-      if (exists("../" de) && exists("/etc/setup/" br ".lst.gz"))
+      if (file_exist("../" de) && file_exist("/etc/setup/" br ".lst.gz"))
         next
       print br
     }
