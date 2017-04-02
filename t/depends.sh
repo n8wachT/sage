@@ -1,7 +1,7 @@
 #!/bin/dash -e
 . ./libsage.sh
-xtrace sage depends
+sh_trace sage depends
 pause
-xtrace sage depends mak
+sh_trace sage depends mak
 pause
-xtrace sage depends make
+sh_trace sage depends make

@@ -1,5 +1,5 @@
 #!/bin/dash -e
 . ./libsage.sh
-xtrace sage listfiles
+sh_trace sage listfiles
 pause
-xtrace sage listfiles make
+sh_trace sage listfiles make

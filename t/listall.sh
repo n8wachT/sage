@@ -1,3 +1,3 @@
 #!/bin/dash -e
 . ./libsage.sh
-xtrace sage listall 'make$'
+sh_trace sage listall 'make$'

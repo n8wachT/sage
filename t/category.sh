@@ -1,5 +1,5 @@
 #!/bin/dash -e
 . ./libsage.sh
-xtrace sage category
+sh_trace sage category
 pause
-xtrace sage category Base
+sh_trace sage category Base

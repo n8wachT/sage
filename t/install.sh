@@ -7,19 +7,19 @@ do :
 done
 
 # rel=0 setup=0
-xtrace rm -fv "$y" "$q"
-xtrace sage install make
+sh_trace rm -fv "$y" "$q"
+sh_trace sage install make
 pause
 
 # rel=0 setup=1
-xtrace rm -fv "$y"
-xtrace sage install make
+sh_trace rm -fv "$y"
+sh_trace sage install make
 pause
 
 # rel=1 setup=0
-xtrace rm -fv "$q"
-xtrace sage install make
+sh_trace rm -fv "$q"
+sh_trace sage install make
 pause
 
 # rel=1 setup=1
-xtrace sage install make
+sh_trace sage install make

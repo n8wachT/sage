@@ -2,4 +2,4 @@
 z=$(mktemp)
 sage category Base | xargs sage depends | awk '$0=$NF' | sort -u > "$z"
 sage list | awk '$0=$1' FS='-[[:digit:]]' | grep -Fvxf "$z" | xargs sage remove
-xtrace rm -rf /usr/x86_64-w64-mingw32
+sh_trace rm -rf /usr/x86_64-w64-mingw32

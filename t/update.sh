@@ -3,15 +3,15 @@
 
 # 0 0
 rm -fv /usr/local/http*/x86_64/setup*
-xtrace sage update
+sh_trace sage update
 
 # 0 1
 rm -fv /usr/local/http*/x86_64/setup.ini
-xtrace sage update
+sh_trace sage update
 
 # 1 0
 rm -fv /usr/local/http*/x86_64/setup.bz2
-xtrace sage update
+sh_trace sage update
 
 # 1 1
-xtrace sage update
+sh_trace sage update

@@ -1,16 +1,16 @@
 #!/bin/dash -e
 . ./libsage.sh
 
-xtrace sage remove
+sh_trace sage remove
 
-xtrace sage remove mak
+sh_trace sage remove mak
 
 # installed
-xtrace sage install make
-xtrace sage remove make
+sh_trace sage install make
+sh_trace sage remove make
 
 # not installed
-xtrace sage remove make
+sh_trace sage remove make
 
 # essential
-xtrace sage remove xz
+sh_trace sage remove xz

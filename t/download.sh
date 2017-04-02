@@ -5,17 +5,17 @@
 for q in /usr/local/http*/x86_64/release/make/make-*.tar.xz
 do :
 done
-xtrace sage download
+sh_trace sage download
 
-xtrace sage download mak
+sh_trace sage download mak
 
 # exist=0
-xtrace rm -fv "$q"
-xtrace sage download make
+sh_trace rm -fv "$q"
+sh_trace sage download make
 
 # exist=1 sha=0
-xtrace dd if=/dev/null of="$q"
-xtrace sage download make
+sh_trace dd if=/dev/null of="$q"
+sh_trace sage download make
 
 # exist=1 sha=1
-xtrace sage download make
+sh_trace sage download make
