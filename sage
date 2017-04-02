@@ -27,7 +27,7 @@ function sh_escape(str,   d, m, x, y, z) {
 function math_trunc(num) {
   return int(num)
 }
-function uri_escape(str,   g, q, y, z) {
+function uri_encode(str,   g, q, y, z) {
   while (g++ < 125) q[sprintf("%c", g)] = g
   while (g = substr(str, ++y, 1))
     z = z (g ~ /[[:alnum:]_.!~*\47()-]/ ? g : "%" sprintf("%02X", q[g]))
@@ -80,7 +80,7 @@ getwd() {
   END {
     for (y in x) {
       print y "=" sh_escape(x[y])
-      print "e" y "=" sh_escape(uri_escape(x[y]))
+      print "e" y "=" sh_escape(uri_encode(x[y]))
     }
   }
   ' /etc/setup/setup.rc > /etc/setup/setup.sh
