@@ -6,7 +6,7 @@ function arr_index(rough, diamond,  x, y) {
   for (x in rough) if (rough[x] == diamond) {y = 1; break}
   return y ? x : 0
 }
-function ceil(num,   x) {
+function math_ceil(num,   x) {
   x = trunc(num)
   return x < num ? x + 1 : x
 }
@@ -54,7 +54,7 @@ eof
     NR == 1 {
       q = $(NF - 1) / (2048 * 100)
     }
-    NR % ceil(q) == 0 {
+    NR % math_ceil(q) == 0 {
       printf "%d%%\r", ++x
     }
     END {
