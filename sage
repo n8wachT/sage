@@ -7,7 +7,7 @@ function arr_index(rough, diamond,  x, y) {
   return y ? x : 0
 }
 function math_ceil(num,   x) {
-  x = trunc(num)
+  x = math_trunc(num)
   return x < num ? x + 1 : x
 }
 function file_exist(file) {
@@ -24,7 +24,7 @@ function quote(str,   d, m, x, y, z) {
   for (y in x) z = z d x[y] (y < m ? d "\\" d : d)
   return z
 }
-function trunc(num) {
+function math_trunc(num) {
   return int(num)
 }
 function uri_escape(str,   g, q, y, z) {
