@@ -86,7 +86,7 @@ getwd() {
   ' /etc/setup/setup.rc > /etc/setup/setup.sh
 }
 
-newer() {
+file_newer() {
   if [ ! -f "$1" ]
   then return 1
   elif [ ! -f "$2" ]
@@ -96,7 +96,7 @@ newer() {
 }
 
 setwd() {
-  if newer /etc/setup/setup.rc /etc/setup/setup.sh
+  if file_newer /etc/setup/setup.rc /etc/setup/setup.sh
   then
     getwd
   fi
