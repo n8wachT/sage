@@ -19,7 +19,7 @@ function arr_sort(arr,   x, y, z) {
     while (z && arr[z] > y) {arr[z + 1] = arr[z]; z--} arr[z + 1] = y
   }
 }
-function quote(str,   d, m, x, y, z) {
+function sh_escape(str,   d, m, x, y, z) {
   d = "\47"; m = split(str, x, d)
   for (y in x) z = z d x[y] (y < m ? d "\\" d : d)
   return z
@@ -79,8 +79,8 @@ getwd() {
   }
   END {
     for (y in x) {
-      print y "=" quote(x[y])
-      print "e" y "=" quote(uri_escape(x[y]))
+      print y "=" sh_escape(x[y])
+      print "e" y "=" sh_escape(uri_escape(x[y]))
     }
   }
   ' /etc/setup/setup.rc > /etc/setup/setup.sh

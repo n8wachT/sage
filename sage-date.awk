@@ -17,7 +17,7 @@ BEGIN {
     }
   }
   for (de = 2; de < ARGC; de++) {
-    while ("curl -I " quote(ARGV[1]) "/" ch[ARGV[de]] | getline) {
+    while ("curl -I " sh_escape(ARGV[1]) "/" ch[ARGV[de]] | getline) {
       if ($1 == "Last-Modified:") {
         print ARGV[de] ";", $0
       }
