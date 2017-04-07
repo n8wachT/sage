@@ -1,7 +1,7 @@
 #!/bin/dash -e
 # -*- sh -*-
 
-stdlib='
+LIBAWK='
 function arr_index(rough, diamond,  x, y) {
   for (x in rough) if (rough[x] == diamond) {y = 1; break}
   return y ? x : 0
@@ -35,7 +35,7 @@ function uri_encode(str,   g, q, y, z) {
 }
 '
 
-webreq() {
+priv_webreq() {
   install -D /dev/null "$2"
   if wget -h >/dev/null 2>&1
   then
@@ -46,7 +46,7 @@ hash
 binary
 get cygwin/$2 $2
 eof
-    awk "$stdlib"'
+    awk "$LIBAWK"'
     BEGIN {
       RS = "#"
       FS = "[( ]"
@@ -64,8 +64,8 @@ eof
   fi
 }
 
-getwd() {
-  awk "$stdlib"'
+priv_getwd() {
+  awk "$LIBAWK"'
   BEGIN {
     FS = "\t"
   }
@@ -86,7 +86,7 @@ getwd() {
   ' /etc/setup/setup.rc > /etc/setup/setup.sh
 }
 
-file_newer() {
+priv_file_newer() {
   if [ ! -f "$1" ]
   then return 1
   elif [ ! -f "$2" ]
@@ -95,26 +95,26 @@ file_newer() {
   fi
 }
 
-setwd() {
-  if file_newer /etc/setup/setup.rc /etc/setup/setup.sh
+priv_setwd() {
+  if priv_file_newer /etc/setup/setup.rc /etc/setup/setup.sh
   then
-    getwd
+    priv_getwd
   fi
   . /etc/setup/setup.sh
   mkdir -p "$lastcache"/"$elastmirror"/"$arch"
   cd "$lastcache"/"$elastmirror"/"$arch"
 }
 
-_update() {
-  setwd
+pub_update() {
+  priv_setwd
   cd ..
-  webreq "$lastmirror" "$arch"/setup.xz
+  priv_webreq "$lastmirror" "$arch"/setup.xz
   xzdec < "$arch"/setup.xz > "$arch"/setup.ini
   echo 'Updated setup.ini'
 }
 
-_category() {
-  setwd
+pub_category() {
+  priv_setwd
   awk '
   BEGIN {
     if (!getline b < ARGV[2]) exit
@@ -134,7 +134,7 @@ _category() {
   ' setup.ini /tmp/tar.lst
 }
 
-_list() {
+pub_list() {
   awk '
   BEGIN {
     ARGC--
@@ -147,8 +147,8 @@ _list() {
   ' /etc/setup/installed.db /tmp/tar.lst
 }
 
-_listall() {
-  setwd
+pub_listall() {
+  priv_setwd
   awk '
   BEGIN {
     if (!getline q < ARGV[2]) exit
@@ -160,11 +160,11 @@ _listall() {
   ' setup.ini /tmp/tar.lst
 }
 
-_listfiles() {
+pub_listfiles() {
   if ! read b < /tmp/tar.lst
   then return
   fi
-  setwd
+  priv_setwd
   find .. -name "$b"'-*' |
   awk '
   END {
@@ -173,8 +173,8 @@ _listfiles() {
   '
 }
 
-_show() {
-  setwd
+pub_show() {
+  priv_setwd
   awk '
   BEGIN {
     while (getline < ARGV[2]) x[$0]
@@ -188,9 +188,9 @@ _show() {
   ' setup.ini /tmp/tar.lst
 }
 
-_depends() {
-  setwd
-  awk "$stdlib"'
+pub_depends() {
+  priv_setwd
+  awk "$LIBAWK"'
   function tree(package,   ec, ro, ta) {
     if (arr_index(branch, package))
       return
@@ -223,9 +223,9 @@ _depends() {
   ' setup.ini /tmp/tar.lst
 }
 
-_rdepends() {
-  setwd
-  awk "$stdlib"'
+pub_rdepends() {
+  priv_setwd
+  awk "$LIBAWK"'
   function rtree(package,   ec, ro, ta) {
     if (arr_index(branch, package))
       return
@@ -255,15 +255,15 @@ _rdepends() {
   ' setup.ini /tmp/tar.lst
 }
 
-_download() {
+pub_download() {
   while read b
-  do download "$b"
+  do priv_download "$b"
   done < /tmp/tar.lst
 }
 
-download() {
+priv_download() {
   pkg=$1
-  setwd
+  priv_setwd
 
   awk '
   BEGIN {
@@ -282,14 +282,14 @@ download() {
   cd ..
   if ! test -f "$path" || ! sha512sum -c sha512.sum
   then
-    webreq "$lastmirror" "$path"
+    priv_webreq "$lastmirror" "$path"
     sha512sum -c sha512.sum || return
   fi
 
   tar -tf "$path" | gzip > /etc/setup/"$pkg".lst.gz
 }
 
-_search() {
+pub_search() {
   if [ ! -s /tmp/tar.lst ]
   then
     echo 'No packages found.'
@@ -304,9 +304,9 @@ _search() {
   done | awk '$0=$4' FS='[./]'
 }
 
-resolve_deps() {
-  setwd
-  awk "$stdlib"'
+priv_resolve_deps() {
+  priv_setwd
+  awk "$LIBAWK"'
   BEGIN {
     while (getline < ARGV[2]) ch[$NF]
     if (!$0) exit
@@ -326,7 +326,7 @@ resolve_deps() {
   ' setup.ini "$1"
 }
 
-_searchall() {
+pub_searchall() {
   if ! read q < /tmp/tar.lst
   then return
   fi
@@ -347,20 +347,20 @@ eof
   ' "$xr"
 }
 
-_install() {
+pub_install() {
   if [ "$nodeps" ]
   then cat /tmp/tar.lst
-  else _depends
+  else pub_depends
   fi |
-  resolve_deps - |
+  priv_resolve_deps - |
   while read fox
   do
-    download "$fox"
+    priv_download "$fox"
     echo 'Unpacking...'
     tar -x -C / -f "$path"
     # update the package database
 
-    awk "$stdlib"'
+    awk "$LIBAWK"'
     BEGIN {
       ARGC = 2
     }
@@ -386,7 +386,7 @@ _install() {
   done
 }
 
-_remove() {
+pub_remove() {
   cygcheck awk sh bunzip2 grep gzip mv sed tar xz > /tmp/rmv.lst
   while read q
   do
@@ -443,8 +443,8 @@ _remove() {
   rm -f /etc/setup/*.lst
 }
 
-_autoremove() {
-  setwd
+pub_autoremove() {
+  priv_setwd
   unset POSIXLY_CORRECT
   awk '
   NR == 1 {
@@ -495,7 +495,7 @@ _autoremove() {
   ' /etc/setup/installed.db setup.ini
 }
 
-_mirror() {
+pub_mirror() {
   awk '
   BEGIN {
     getline x < ARGV[2]
@@ -521,7 +521,7 @@ _mirror() {
   ' /etc/setup/setup.rc /tmp/tar.lst
 }
 
-_cache() {
+pub_cache() {
   awk '
   BEGIN {
     "cygpath -aiwf " ARGV[2] | getline x
@@ -581,7 +581,7 @@ done
 if [ "$command" ]
 then
   readonly arch=$(uname -m | sed s.i6.x.)
-  _"$command"
+  pub_"$command"
 else
   cat /usr/local/share/sage.txt
 fi
