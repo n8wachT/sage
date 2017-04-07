@@ -27,10 +27,18 @@ function sh_escape(str,   d, m, x, y, z) {
   for (y in x) z = z d x[y] (y < m ? d "\\" d : d)
   return z
 }
-function uri_encode(str,   g, q, y, z) {
-  while (g++ < 125) q[sprintf("%c", g)] = g
-  while (g = substr(str, ++y, 1))
-    z = z (g ~ /[[:alnum:]_.!~*\47()-]/ ? g : "%" sprintf("%02X", q[g]))
+function str_chr(num) {
+  if (num < 0 || num > 65535)
+    return -1
+  return sprintf("%c", num)
+}
+function str_ord(stn,   x) {
+  while (str_chr(++x) != substr(stn, 1, 1));
+  return x
+}
+function uri_encode(stn,   k, q, z) {
+  while (k = substr(stn, ++q, 1))
+    z = z (k ~ /[[:alnum:]_.!~*\47()-]/ ? k : "%" sprintf("%02X", str_ord(k)))
   return z
 }
 '
