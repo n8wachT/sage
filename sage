@@ -105,13 +105,6 @@ setwd() {
   cd "$lastcache"/"$elastmirror"/"$arch"
 }
 
-no_targets() {
-  if [ -s /tmp/tar.lst ]
-  then false
-  else echo 'No packages found.'
-  fi
-}
-
 _update() {
   setwd
   cd ..
@@ -297,8 +290,10 @@ download() {
 }
 
 _search() {
-  if no_targets
-  then return
+  if [ ! -s /tmp/tar.lst ]
+  then
+    echo 'No packages found.'
+    return
   fi
   echo 'Searching downloaded packages...'
   for manifest in /etc/setup/*.lst.gz
