@@ -6,26 +6,26 @@ function arr_index(rough, diamond,  x, y) {
   for (x in rough) if (rough[x] == diamond) {y = 1; break}
   return y ? x : 0
 }
-function math_ceil(num,   x) {
-  x = math_trunc(num)
-  return x < num ? x + 1 : x
-}
-function file_exist(file) {
-  return getline < file < 0 ? 0 : 1
-}
 function arr_sort(arr,   x, y, z) {
   for (x in arr) {
     y = arr[x]; z = x - 1
     while (z && arr[z] > y) {arr[z + 1] = arr[z]; z--} arr[z + 1] = y
   }
 }
+function file_exist(file) {
+  return getline < file < 0 ? 0 : 1
+}
+function math_ceil(num,   x) {
+  x = math_trunc(num)
+  return x < num ? x + 1 : x
+}
+function math_trunc(num) {
+  return int(num)
+}
 function sh_escape(str,   d, m, x, y, z) {
   d = "\47"; m = split(str, x, d)
   for (y in x) z = z d x[y] (y < m ? d "\\" d : d)
   return z
-}
-function math_trunc(num) {
-  return int(num)
 }
 function uri_encode(str,   g, q, y, z) {
   while (g++ < 125) q[sprintf("%c", g)] = g
@@ -34,6 +34,97 @@ function uri_encode(str,   g, q, y, z) {
   return z
 }
 '
+
+priv_download() {
+  pkg=$1
+  priv_setwd
+
+  awk '
+  BEGIN {
+    ARGC--
+  }
+  $1 == "@" && $2 == ARGV[2] {
+    y = 1
+  }
+  $1 == "install:" && y {
+    print $4, $2
+    exit
+  }
+  ' setup.ini "$pkg" > sha512.sum
+  read sha path < sha512.sum
+  mv sha512.sum ..
+  cd ..
+  if ! test -f "$path" || ! sha512sum -c sha512.sum
+  then
+    priv_webreq "$lastmirror" "$path"
+    sha512sum -c sha512.sum || return
+  fi
+
+  tar -tf "$path" | gzip > /etc/setup/"$pkg".lst.gz
+}
+
+priv_file_newer() {
+  if [ ! -f "$1" ]
+  then return 1
+  elif [ ! -f "$2" ]
+  then return 0
+  else find "$2" -newer "$1" -exec false {} +
+  fi
+}
+
+priv_getwd() {
+  awk "$LIBAWK"'
+  BEGIN {
+    FS = "\t"
+  }
+  {
+    if (/\t/)
+      x[y] = x[y] ? x[y] "," $2 : $2
+    else {
+      sub("-", "")
+      y = $0
+    }
+  }
+  END {
+    for (y in x) {
+      print y "=" sh_escape(x[y])
+      print "e" y "=" sh_escape(uri_encode(x[y]))
+    }
+  }
+  ' /etc/setup/setup.rc > /etc/setup/setup.sh
+}
+
+priv_resolve_deps() {
+  priv_setwd
+  awk "$LIBAWK"'
+  BEGIN {
+    while (getline < ARGV[2]) ch[$NF]
+    if (!$0) exit
+    ARGC--
+  }
+  {
+    if ($1 == "@")
+      br = $2
+    if ($1 == "install:" && br in ch) {
+      delete ch[br]
+      de = $2
+      if (file_exist("../" de) && file_exist("/etc/setup/" br ".lst.gz"))
+        next
+      print br
+    }
+  }
+  ' setup.ini "$1"
+}
+
+priv_setwd() {
+  if priv_file_newer /etc/setup/setup.rc /etc/setup/setup.sh
+  then
+    priv_getwd
+  fi
+  . /etc/setup/setup.sh
+  mkdir -p "$lastcache"/"$elastmirror"/"$arch"
+  cd "$lastcache"/"$elastmirror"/"$arch"
+}
 
 priv_webreq() {
   install -D /dev/null "$2"
@@ -64,53 +155,82 @@ eof
   fi
 }
 
-priv_getwd() {
-  awk "$LIBAWK"'
-  BEGIN {
-    FS = "\t"
+pub_autoremove() {
+  priv_setwd
+  unset POSIXLY_CORRECT
+  awk '
+  NR == 1 {
+    next
   }
-  {
-    if (/\t/)
-      x[y] = x[y] ? x[y] "," $2 : $2
-    else {
-      sub("-", "")
-      y = $0
+  NR == FNR {
+    score[$1] = $3 ? 0 : 1
+    next
+  }
+  $1 == "@" {
+    aph = $2
+  }
+  $1 == "category:" {
+    if (/ Base/) {
+      if (aph in score) {
+        score[aph]++
+      }
+    }
+  }
+  $1 == "requires:" {
+    for (z = 2; z <= NF; z++) {
+      req[aph][$z]
     }
   }
   END {
-    for (y in x) {
-      print y "=" sh_escape(x[y])
-      print "e" y "=" sh_escape(uri_encode(x[y]))
+    for (brv in req)
+      if (brv in score) {
+        for (cha in req[brv]) {
+          score[cha]++
+        }
+      }
+    while (!done) {
+      done = 1
+      for (det in score) {
+        if (!score[det]) {
+          done = 0
+          print det
+          delete score[det]
+          if (isarray(req[det])) {
+            for (ech in req[det]) {
+              score[ech]--
+            }
+          }
+        }
+      }
     }
   }
-  ' /etc/setup/setup.rc > /etc/setup/setup.sh
+  ' /etc/setup/installed.db setup.ini
 }
 
-priv_file_newer() {
-  if [ ! -f "$1" ]
-  then return 1
-  elif [ ! -f "$2" ]
-  then return 0
-  else find "$2" -newer "$1" -exec false {} +
-  fi
-}
-
-priv_setwd() {
-  if priv_file_newer /etc/setup/setup.rc /etc/setup/setup.sh
-  then
-    priv_getwd
-  fi
-  . /etc/setup/setup.sh
-  mkdir -p "$lastcache"/"$elastmirror"/"$arch"
-  cd "$lastcache"/"$elastmirror"/"$arch"
-}
-
-pub_update() {
-  priv_setwd
-  cd ..
-  priv_webreq "$lastmirror" "$arch"/setup.xz
-  xzdec < "$arch"/setup.xz > "$arch"/setup.ini
-  echo 'Updated setup.ini'
+pub_cache() {
+  awk '
+  BEGIN {
+    "cygpath -aiwf " ARGV[2] | getline x
+    ARGC--
+  }
+  {
+    z = z ? z RS $0 : $0
+  }
+  /last-cache/ {
+    getline
+    if (x)
+      z = z "\n\t" x
+    else {
+      print $1
+    }
+  }
+  END {
+    if (x) {
+      print z > ARGV[1]
+      print "Cache set to:\n" x
+    }
+  }
+  ' /etc/setup/setup.rc /tmp/tar.lst
 }
 
 pub_category() {
@@ -132,6 +252,86 @@ pub_category() {
     }
   }
   ' setup.ini /tmp/tar.lst
+}
+
+pub_depends() {
+  priv_setwd
+  awk "$LIBAWK"'
+  function tree(package,   ec, ro, ta) {
+    if (arr_index(branch, package))
+      return
+    branch[++ec] = package
+    for (ro in branch)
+      printf branch[ro] (ro == ec ? RS : " > ")
+    while (reqs[package, ++ta])
+      tree(reqs[package, ta], ec)
+    delete branch[ec--]
+  }
+  BEGIN {
+    while (getline < ARGV[2]) xr[$0]
+    if (!$0) exit
+    ARGC--
+  }
+  {
+    if ($1 == "@")
+      ya = $2
+    if ($1 == "requires:") {
+      for (zu = 2; zu <= NF; zu++) {
+        reqs[ya, zu - 1] = $zu
+      }
+    }
+  }
+  END {
+    for (zu in xr) {
+      tree(zu)
+    }
+  }
+  ' setup.ini /tmp/tar.lst
+}
+
+pub_download() {
+  while read b
+  do priv_download "$b"
+  done < /tmp/tar.lst
+}
+
+pub_install() {
+  if [ "$nodeps" ]
+  then cat /tmp/tar.lst
+  else pub_depends
+  fi |
+  priv_resolve_deps - |
+  while read fox
+  do
+    priv_download "$fox"
+    echo 'Unpacking...'
+    tar -x -C / -f "$path"
+    # update the package database
+
+    awk "$LIBAWK"'
+    BEGIN {
+      ARGC = 2
+    }
+    NR == 1 {qu = $0}
+    NR != 1 {ro[$1] = $2 FS $3}
+    END {
+      ro[ARGV[2]] = ARGV[3] FS 0
+      for (xr in ro) ya[++zu] = xr FS ro[xr]
+      arr_sort(ya)
+      for (xr in ya) qu = qu RS ya[xr]
+      print qu > ARGV[1]
+    }
+    ' /etc/setup/installed.db "$fox" "$path"
+
+  done
+  # run all postinstall scripts
+  set /etc/postinstall/*.sh
+  [ -e "$1" ] || shift
+  for nov do
+    echo 'Running' "$nov"
+    "$nov"
+    mv "$nov" "$nov".done
+  done
 }
 
 pub_list() {
@@ -173,54 +373,30 @@ pub_listfiles() {
   '
 }
 
-pub_show() {
-  priv_setwd
+pub_mirror() {
   awk '
   BEGIN {
-    while (getline < ARGV[2]) x[$0]
-    if (!$0) exit
-    ARGC--
-  }
-  $1 == "@" {
-    y = $2 in x ? 1 : 0
-  }
-  y
-  ' setup.ini /tmp/tar.lst
-}
-
-pub_depends() {
-  priv_setwd
-  awk "$LIBAWK"'
-  function tree(package,   ec, ro, ta) {
-    if (arr_index(branch, package))
-      return
-    branch[++ec] = package
-    for (ro in branch)
-      printf branch[ro] (ro == ec ? RS : " > ")
-    while (reqs[package, ++ta])
-      tree(reqs[package, ta], ec)
-    delete branch[ec--]
-  }
-  BEGIN {
-    while (getline < ARGV[2]) xr[$0]
-    if (!$0) exit
+    getline x < ARGV[2]
     ARGC--
   }
   {
-    if ($1 == "@")
-      ya = $2
-    if ($1 == "requires:") {
-      for (zu = 2; zu <= NF; zu++) {
-        reqs[ya, zu - 1] = $zu
-      }
+    y = y ? y RS $0 : $0
+  }
+  /last-mirror/ {
+    getline
+    if (x)
+      y = y "\n\t" x
+    else {
+      print $1
     }
   }
   END {
-    for (zu in xr) {
-      tree(zu)
+    if (x) {
+      print y > ARGV[1]
+      print "Mirror set to:\n" x
     }
   }
-  ' setup.ini /tmp/tar.lst
+  ' /etc/setup/setup.rc /tmp/tar.lst
 }
 
 pub_rdepends() {
@@ -253,137 +429,6 @@ pub_rdepends() {
     rtree(xr)
   }
   ' setup.ini /tmp/tar.lst
-}
-
-pub_download() {
-  while read b
-  do priv_download "$b"
-  done < /tmp/tar.lst
-}
-
-priv_download() {
-  pkg=$1
-  priv_setwd
-
-  awk '
-  BEGIN {
-    ARGC--
-  }
-  $1 == "@" && $2 == ARGV[2] {
-    y = 1
-  }
-  $1 == "install:" && y {
-    print $4, $2
-    exit
-  }
-  ' setup.ini "$pkg" > sha512.sum
-  read sha path < sha512.sum
-  mv sha512.sum ..
-  cd ..
-  if ! test -f "$path" || ! sha512sum -c sha512.sum
-  then
-    priv_webreq "$lastmirror" "$path"
-    sha512sum -c sha512.sum || return
-  fi
-
-  tar -tf "$path" | gzip > /etc/setup/"$pkg".lst.gz
-}
-
-pub_search() {
-  if [ ! -s /tmp/tar.lst ]
-  then
-    echo 'No packages found.'
-    return
-  fi
-  echo 'Searching downloaded packages...'
-  for manifest in /etc/setup/*.lst.gz
-  do
-    if gzip -cd "$manifest" | grep -q -f /tmp/tar.lst
-    then echo "$manifest"
-    fi
-  done | awk '$0=$4' FS='[./]'
-}
-
-priv_resolve_deps() {
-  priv_setwd
-  awk "$LIBAWK"'
-  BEGIN {
-    while (getline < ARGV[2]) ch[$NF]
-    if (!$0) exit
-    ARGC--
-  }
-  {
-    if ($1 == "@")
-      br = $2
-    if ($1 == "install:" && br in ch) {
-      delete ch[br]
-      de = $2
-      if (file_exist("../" de) && file_exist("/etc/setup/" br ".lst.gz"))
-        next
-      print br
-    }
-  }
-  ' setup.ini "$1"
-}
-
-pub_searchall() {
-  if ! read q < /tmp/tar.lst
-  then return
-  fi
-  xr=$(mktemp /tmp/XXX)
-  wget -O "$xr" -i - <<eof
-https://cygwin.com/cgi-bin2/package-grep.cgi?text=1&arch=$arch&grep=$q
-eof
-  awk '
-  BEGIN {
-    FS = "-[[:digit:]]"
-  }
-  NR == 1 || z[$1]++ || /-debuginfo-/ || /^cygwin32-/ {
-    next
-  }
-  {
-    print $1
-  }
-  ' "$xr"
-}
-
-pub_install() {
-  if [ "$nodeps" ]
-  then cat /tmp/tar.lst
-  else pub_depends
-  fi |
-  priv_resolve_deps - |
-  while read fox
-  do
-    priv_download "$fox"
-    echo 'Unpacking...'
-    tar -x -C / -f "$path"
-    # update the package database
-
-    awk "$LIBAWK"'
-    BEGIN {
-      ARGC = 2
-    }
-    NR == 1 {qu = $0}
-    NR != 1 {ro[$1] = $2 FS $3}
-    END {
-      ro[ARGV[2]] = ARGV[3] FS 0
-      for (xr in ro) ya[++zu] = xr FS ro[xr]
-      arr_sort(ya)
-      for (xr in ya) qu = qu RS ya[xr]
-      print qu > ARGV[1]
-    }
-    ' /etc/setup/installed.db "$fox" "$path"
-
-  done
-  # run all postinstall scripts
-  set /etc/postinstall/*.sh
-  [ -e "$1" ] || shift
-  for nov do
-    echo 'Running' "$nov"
-    "$nov"
-    mv "$nov" "$nov".done
-  done
 }
 
 pub_remove() {
@@ -443,108 +488,63 @@ pub_remove() {
   rm -f /etc/setup/*.lst
 }
 
-pub_autoremove() {
-  priv_setwd
-  unset POSIXLY_CORRECT
+pub_search() {
+  if [ ! -s /tmp/tar.lst ]
+  then
+    echo 'No packages found.'
+    return
+  fi
+  echo 'Searching downloaded packages...'
+  for manifest in /etc/setup/*.lst.gz
+  do
+    if gzip -cd "$manifest" | grep -q -f /tmp/tar.lst
+    then echo "$manifest"
+    fi
+  done | awk '$0=$4' FS='[./]'
+}
+
+pub_searchall() {
+  if ! read q < /tmp/tar.lst
+  then return
+  fi
+  xr=$(mktemp /tmp/XXX)
+  wget -O "$xr" -i - <<eof
+https://cygwin.com/cgi-bin2/package-grep.cgi?text=1&arch=$arch&grep=$q
+eof
   awk '
-  NR == 1 {
+  BEGIN {
+    FS = "-[[:digit:]]"
+  }
+  NR == 1 || z[$1]++ || /-debuginfo-/ || /^cygwin32-/ {
     next
   }
-  NR == FNR {
-    score[$1] = $3 ? 0 : 1
-    next
+  {
+    print $1
+  }
+  ' "$xr"
+}
+
+pub_show() {
+  priv_setwd
+  awk '
+  BEGIN {
+    while (getline < ARGV[2]) x[$0]
+    if (!$0) exit
+    ARGC--
   }
   $1 == "@" {
-    aph = $2
+    y = $2 in x ? 1 : 0
   }
-  $1 == "category:" {
-    if (/ Base/) {
-      if (aph in score) {
-        score[aph]++
-      }
-    }
-  }
-  $1 == "requires:" {
-    for (z = 2; z <= NF; z++) {
-      req[aph][$z]
-    }
-  }
-  END {
-    for (brv in req)
-      if (brv in score) {
-        for (cha in req[brv]) {
-          score[cha]++
-        }
-      }
-    while (!done) {
-      done = 1
-      for (det in score) {
-        if (!score[det]) {
-          done = 0
-          print det
-          delete score[det]
-          if (isarray(req[det])) {
-            for (ech in req[det]) {
-              score[ech]--
-            }
-          }
-        }
-      }
-    }
-  }
-  ' /etc/setup/installed.db setup.ini
+  y
+  ' setup.ini /tmp/tar.lst
 }
 
-pub_mirror() {
-  awk '
-  BEGIN {
-    getline x < ARGV[2]
-    ARGC--
-  }
-  {
-    y = y ? y RS $0 : $0
-  }
-  /last-mirror/ {
-    getline
-    if (x)
-      y = y "\n\t" x
-    else {
-      print $1
-    }
-  }
-  END {
-    if (x) {
-      print y > ARGV[1]
-      print "Mirror set to:\n" x
-    }
-  }
-  ' /etc/setup/setup.rc /tmp/tar.lst
-}
-
-pub_cache() {
-  awk '
-  BEGIN {
-    "cygpath -aiwf " ARGV[2] | getline x
-    ARGC--
-  }
-  {
-    z = z ? z RS $0 : $0
-  }
-  /last-cache/ {
-    getline
-    if (x)
-      z = z "\n\t" x
-    else {
-      print $1
-    }
-  }
-  END {
-    if (x) {
-      print z > ARGV[1]
-      print "Cache set to:\n" x
-    }
-  }
-  ' /etc/setup/setup.rc /tmp/tar.lst
+pub_update() {
+  priv_setwd
+  cd ..
+  priv_webreq "$lastmirror" "$arch"/setup.xz
+  xzdec < "$arch"/setup.xz > "$arch"/setup.ini
+  echo 'Updated setup.ini'
 }
 
 > /tmp/tar.lst
