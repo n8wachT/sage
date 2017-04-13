@@ -18,7 +18,7 @@ BEGIN {
   }
   FS = ";"
   while ("curl cygwin.com/mirrors.lst" | getline)
-    xr[++NR] = dom($1) FS $1
+    arr_push(xr, dom($1) FS $1)
   arr_sort(xr)
   for (ya = 1; http < 5 || ftp < 5; ya++) {
     split(xr[ya], zu)
