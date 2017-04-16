@@ -1,13 +1,13 @@
 #!/usr/local/bin/awklib -f
 BEGIN {
   if (ARGC < 3) {
-    print "sage-date.awk [mirror] [packages]"
-    exit
+    print "sage-date.awk <mirror> <packages>"
+    exit 1
   }
   while (ec = getline < "setup.ini") {
     if (ec < 0) {
       print "setup.ini not found"
-      exit
+      exit 1
     }
     if ($1 == "@")
       br = $2

@@ -1,8 +1,8 @@
 #!/bin/dash -e
 if [ "$#" = 0 ]
 then
-  echo 'sage-cost.sh [packages]'
-  exit
+  echo 'sage-cost.sh <packages>'
+  exit 1
 fi
 wh=$(mktemp)
 

@@ -107,7 +107,8 @@ priv_resolve_deps() {
   awk "$LIBAWK"'
   BEGIN {
     while (getline < ARGV[2]) ch[$NF]
-    if (!$0) exit
+    if (!$0)
+      exit 1
     ARGC--
   }
   {
@@ -245,7 +246,8 @@ pub_category() {
   priv_setwd
   awk '
   BEGIN {
-    if (!getline b < ARGV[2]) exit
+    if (!getline b < ARGV[2])
+      exit 1
     ARGC--
   }
   {
@@ -277,7 +279,8 @@ pub_depends() {
   }
   BEGIN {
     while (getline < ARGV[2]) xr[$0]
-    if (!$0) exit
+    if (!$0)
+      exit 1
     ARGC--
   }
   {
@@ -359,7 +362,8 @@ pub_listall() {
   priv_setwd
   awk '
   BEGIN {
-    if (!getline q < ARGV[2]) exit
+    if (!getline q < ARGV[2])
+      exit 1
     ARGC--
   }
   $1 == "@" && $2 ~ q {
@@ -421,7 +425,8 @@ pub_rdepends() {
     delete branch[ec--]
   }
   BEGIN {
-    if (!getline xr < ARGV[2]) exit
+    if (!getline xr < ARGV[2])
+      exit 1
     ARGC--
   }
   {
@@ -455,10 +460,14 @@ pub_remove() {
       FS = "[/\\\\]"
     }
     FILENAME == ARGV[1] {
-      if ($NF) ess[$NF]
+      if ($NF) {
+        ess[$NF]
+      }
     }
     FILENAME == ARGV[2] {
-      if ($NF in ess) exit 1
+      if ($NF in ess) {
+        exit 1
+      }
     }
     ' /tmp/rmv.lst /etc/setup/"$q".lst
     then
@@ -537,7 +546,8 @@ pub_show() {
   awk '
   BEGIN {
     while (getline < ARGV[2]) x[$0]
-    if (!$0) exit
+    if (!$0)
+      exit 1
     ARGC--
   }
   $1 == "@" {
