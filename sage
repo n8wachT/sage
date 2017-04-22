@@ -577,7 +577,7 @@ do
       shift
     ;;
 
-    --version)
+    version)
       echo 2.0.0
       exit
     ;;
@@ -602,4 +602,5 @@ then
   pub_"$command"
 else
   cat /usr/local/share/sage.txt
+  exit 1
 fi

@@ -2,7 +2,7 @@ NAME
   Sage - package manager utility
 
 SYNOPSIS
-  sage [operation] [options] [targets]
+  sage <operation> [option] [targets]
 
 DESCRIPTION
   Sage is a package management utility that tracks installed packages on a
@@ -69,9 +69,9 @@ OPERATIONS
     absolute or regular paths. If no directory is provided, display current
     cache.
 
-OPTIONS
+  version
+    Display version and exit.
+
+OPTION
   --nodeps
     Specify this option to skip all dependency checks.
-
-  --version
-    Display version and exit.
