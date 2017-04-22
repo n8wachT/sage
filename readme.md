@@ -33,4 +33,4 @@ Steven Penny
 [ec]:https://github.com/svnpenn/stdlib
 [qu]:https://raw.githubusercontent.com/svnpenn/sage/master/doc/sage.jpg
 [xr]:https://www.bountysource.com/teams/svnpenn
-[ya]:https://github.com/svnpenn/sage/blob/master/doc/sage.txt
+[ya]:https://github.com/svnpenn/sage/blob/master/doc/sage.md
