@@ -28,7 +28,7 @@ Author
 ------------
 Steven Penny
 
-<!-- protocol is needed for image to render -->
+[protocol is needed for image to render]::
 [br]:https://api.bountysource.com/badge/team?team_id=114003&style=raised
 [ec]:https://github.com/svnpenn/stdlib
 [qu]:https://raw.githubusercontent.com/svnpenn/sage/master/doc/sage.jpg
