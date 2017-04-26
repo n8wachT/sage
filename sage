@@ -2,7 +2,7 @@
 # -*- sh -*-
 
 LIBAWK='
-function arr_index(rough, diamond,  x, y) {
+function arr_search(rough, diamond,  x, y) {
   for (x in rough) if (rough[x] == diamond) {y = 1; break}
   return y ? x : 0
 }
@@ -268,7 +268,7 @@ pub_depends() {
   priv_setwd
   awk "$LIBAWK"'
   function tree(package,   ec, ro, ta) {
-    if (arr_index(branch, package))
+    if (arr_search(branch, package))
       return
     branch[++ec] = package
     for (ro in branch)
@@ -415,7 +415,7 @@ pub_rdepends() {
   priv_setwd
   awk "$LIBAWK"'
   function rtree(package,   ec, ro, ta) {
-    if (arr_index(branch, package))
+    if (arr_search(branch, package))
       return
     branch[++ec] = package
     for (ro in branch)
