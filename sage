@@ -15,11 +15,11 @@ function arr_sort(arr,   x, y, z) {
 function file_exist(file) {
   return getline < file < 0 ? 0 : 1
 }
-function math_ceil(num,   x) {
-  x = math_trunc(num)
+function mt_ceil(num,   x) {
+  x = mt_trunc(num)
   return x < num ? x + 1 : x
 }
-function math_trunc(num) {
+function mt_trunc(num) {
   return int(num)
 }
 function sh_escape(str,   d, m, x, y, z) {
@@ -154,7 +154,7 @@ eof
     NR == 1 {
       q = $(NF - 1) / (2048 * 100)
     }
-    NR % math_ceil(q) == 0 {
+    NR % mt_ceil(q) == 0 {
       printf "%d%%\r", ++x
     }
     END {
