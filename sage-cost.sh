@@ -1,5 +1,5 @@
 #!/bin/dash -e
-if [ "$#" = 0 ]
+if [ "$#" -lt 2 ]
 then
   cat <<'eof'
 sage-cost.sh <base> <packages>
