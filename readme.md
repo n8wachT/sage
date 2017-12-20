@@ -2,8 +2,6 @@ Cygwin package manager
 =========================
 ![sage.jpg 540 x 360][qu]
 
-![bountysource $ raised][br]
-
 Sage is a Cygwin package manager. It includes a command-line installer for
 Cygwin which cooperates with Cygwin Setup and uses the same repository.
 
@@ -18,19 +16,13 @@ Install
 Links
 ---------------------
 - [Documentation][ya]
-- [svnpenn - Bountysource][xr]
-
-Thanks
-------------
-[StdLib][ec]
+- [StdLib][ec]
 
 Author
 ------------
 Steven Penny
 
 [protocol is needed for image to render]::
-[br]:https://api.bountysource.com/badge/team?team_id=114003&style=raised
 [ec]:https://github.com/svnpenn/stdlib
 [qu]:https://raw.githubusercontent.com/svnpenn/sage/master/docs/sage.jpg
-[xr]:https://www.bountysource.com/teams/svnpenn
 [ya]:https://github.com/svnpenn/sage/blob/master/docs/sage.md
