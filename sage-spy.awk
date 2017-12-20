@@ -16,7 +16,7 @@ BEGIN {
   if (ARGC != 2) {
     print "sage-spy.awk <timeout>"
     print ""
-    print "try .5 for FTP"
+    print "try 1.7 for FTP"
     exit 1
   }
   while ("curl cygwin.com/mirrors.lst" | getline) {
@@ -33,7 +33,7 @@ BEGIN {
         printf "%s\r", ta[2]
       }
     }
-    print
+    print ""
     if (zu[2] ~ /^http/) {
       http++
     }
