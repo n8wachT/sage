@@ -16,7 +16,7 @@ BEGIN {
   if (ARGC != 2) {
     print "sage-spy.awk <timeout>"
     print ""
-    print "try 2 for FTP"
+    print "try 2.1 for FTP"
     exit 1
   }
   while ("curl cygwin.com/mirrors.lst" | getline) {
