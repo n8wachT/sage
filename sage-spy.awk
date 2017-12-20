@@ -16,7 +16,7 @@ BEGIN {
   if (ARGC != 2) {
     print "sage-spy.awk <timeout>"
     print ""
-    print "try 1.7 for FTP"
+    print "try 2 for FTP"
     exit 1
   }
   while ("curl cygwin.com/mirrors.lst" | getline) {
@@ -26,11 +26,11 @@ BEGIN {
   arr_sort(xr)
   for (ya = 1; http < 5 || ftp < 5; ya++) {
     split(xr[ya], zu, ";")
-    printf "%29s %.75s\r", "", zu[2]
+    printf "%20s %.58s\r", "", zu[2]
     while ("timeout " ARGV[1] " curl -Is " zu[2] "x86_64/setup.xz" | getline) {
-      split($0, ta, ": ")
-      if (tolower(ta[1]) == "last-modified") {
-        printf "%s\r", ta[2]
+      split($0, ta, ", ")
+      if (tolower(ta[1]) ~ "last-modified") {
+        printf "%.20s\r", ta[2]
       }
     }
     print ""
