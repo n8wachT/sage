@@ -308,8 +308,10 @@ pub_download() {
 
 pub_install() {
   if [ "$nodeps" ]
-  then cat /tmp/tar.lst
-  else pub_depends
+  then
+    cat /tmp/tar.lst
+  else
+    pub_depends
   fi |
   priv_resolve_deps - |
   while read fox
@@ -317,24 +319,32 @@ pub_install() {
     priv_download "$fox"
     echo 'Unpacking...'
     tar -x -C / -f "$path"
-    # update the package database
 
+    # update the package database
     awk "$LIBAWK"'
     BEGIN {
       ARGC = 2
     }
-    NR == 1 {qu = $0}
-    NR != 1 {ro[$1] = $2 FS $3}
+    NR == 1 {
+      qu = $0
+    }
+    NR != 1 {
+      ro[$1] = $2 FS $3
+    }
     END {
       ro[ARGV[2]] = ARGV[3] FS 0
-      for (xr in ro) ya[++zu] = xr FS ro[xr]
+      for (xr in ro) {
+        ya[++zu] = xr FS ro[xr]
+      }
       arr_sort(ya)
-      for (xr in ya) qu = qu RS ya[xr]
+      for (xr in ya) {
+        qu = qu RS ya[xr]
+      }
       print qu > ARGV[1]
     }
     ' /etc/setup/installed.db "$fox" "$path"
-
   done
+
   # run all postinstall scripts
   set /etc/postinstall/*.sh
   [ -e "$1" ] || shift
