@@ -2,9 +2,12 @@
 if [ "$#" -lt 2 ]
 then
   cat <<'eof'
-sage-cost.sh <base> <packages>
+SYNOPSIS
+  sage-cost.sh <base> <packages>
 
-if base is "no", exclude base packages from the output; otherwise include them
+BASE
+  no    exclude base packages
+  yes   include base packages
 eof
   exit 1
 fi
