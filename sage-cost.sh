@@ -6,8 +6,8 @@ SYNOPSIS
   sage-cost.sh <base> <packages>
 
 BASE
-  no    exclude base packages
-  yes   include base packages
+  ex   exclude base packages
+  in   include base packages
 eof
   exit 1
 fi
