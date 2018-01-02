@@ -15,7 +15,7 @@ br=$1
 shift
 wh=$(mktemp)
 
-if [ "$br" = no ]
+if [ "$br" = ex ]
 then
   sage category Base |
   xargs sage depends |
