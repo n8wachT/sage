@@ -137,11 +137,12 @@ priv_setwd() {
 
 priv_webreq() {
   install -D /dev/null "$2"
-  if wget -h >/dev/null 2>&1
+  if
+    curl -h >/dev/null
   then
-    wget -O "$2" "$1"/"$2"
+    curl -o "$2" "$1"/"$2"
   else
-    ftp -Av mirror.nexcess.net <<eof |
+    ftp -Av mirrors.sonic.net <<eof |
 hash
 binary
 get cygwin/$2 $2
@@ -532,12 +533,11 @@ pub_search() {
 
 pub_searchall() {
   if ! read q < /tmp/tar.lst
-  then return
+  then
+    return
   fi
-  xr=$(mktemp /tmp/XXX)
-  wget -O "$xr" -i - <<eof
-https://cygwin.com/cgi-bin2/package-grep.cgi?text=1&arch=$arch&grep=$q
-eof
+  curl -G -d text=1 -d arch="$arch" -d grep="$q" \
+  https://cygwin.com/cgi-bin2/package-grep.cgi |
   awk '
   BEGIN {
     FS = "-[[:digit:]]"
@@ -548,7 +548,7 @@ eof
   {
     print $1
   }
-  ' "$xr"
+  '
 }
 
 pub_show() {
