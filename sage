@@ -73,10 +73,13 @@ priv_download() {
 
 priv_file_newer() {
   if [ ! -f "$1" ]
-  then return 1
+  then
+    return 1
   elif [ ! -f "$2" ]
-  then return 0
-  else find "$2" -newer "$1" -exec false {} +
+  then
+    return 0
+  else
+    find "$2" -newer "$1" -exec false {} +
   fi
 }
 
@@ -138,7 +141,9 @@ priv_setwd() {
 priv_webreq() {
   install -D /dev/null "$2"
   if
-    curl -h >/dev/null
+    # if curl is not found, redirect stderr
+    # if curl is found, redirect stdout
+    curl -h >/dev/null 2>&1
   then
     curl -o "$2" "$1"/"$2"
   else
