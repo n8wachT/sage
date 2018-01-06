@@ -3,7 +3,12 @@
 
 LIBAWK='
 function arr_search(rough, diamond,  x, y) {
-  for (x in rough) if (rough[x] == diamond) {y = 1; break}
+  for (x in rough) {
+    if (rough[x] == diamond) {
+      y = 1
+      break
+    }
+  }
   return y ? x : 0
 }
 function arr_sort(arr,   x, y, z) {
@@ -24,12 +29,15 @@ function mt_trunc(num) {
 }
 function sh_escape(str,   d, m, x, y, z) {
   d = "\47"; m = split(str, x, d)
-  for (y in x) z = z d x[y] (y < m ? d "\\" d : d)
+  for (y in x) {
+    z = z d x[y] (y < m ? d "\\" d : d)
+  }
   return z
 }
 function str_chr(num) {
-  if (num < 0 || num > 65535)
+  if (num < 0 || num > 65535) {
     return -1
+  }
   return sprintf("%c", num)
 }
 function str_ord(stn,   x) {
@@ -37,8 +45,9 @@ function str_ord(stn,   x) {
   return x
 }
 function uri_encode(stn,   k, q, z) {
-  while (k = substr(stn, ++q, 1))
+  while (k = substr(stn, ++q, 1)) {
     z = z (k ~ /[[:alnum:]_.!~*\47()-]/ ? k : "%" sprintf("%02X", str_ord(k)))
+  }
   return z
 }
 '
@@ -89,8 +98,9 @@ priv_getwd() {
     FS = "\t"
   }
   {
-    if (/\t/)
+    if (/\t/) {
       x[y] = x[y] ? x[y] "," $2 : $2
+    }
     else {
       sub("-", "")
       y = $0
@@ -110,18 +120,21 @@ priv_resolve_deps() {
   awk "$LIBAWK"'
   BEGIN {
     while (getline < ARGV[2]) ch[$NF]
-    if (!$0)
+    if (!$0) {
       exit 1
+    }
     ARGC--
   }
   {
-    if ($1 == "@")
+    if ($1 == "@") {
       br = $2
+    }
     if ($1 == "install:" && br in ch) {
       delete ch[br]
       de = $2
-      if (file_exist("../" de) && file_exist("/etc/setup/" br ".lst.gz"))
+      if (file_exist("../" de) && file_exist("/etc/setup/" br ".lst.gz")) {
         next
+      }
       print br
     }
   }
@@ -197,12 +210,13 @@ pub_autoremove() {
     }
   }
   END {
-    for (brv in req)
+    for (brv in req) {
       if (brv in score) {
         for (cha in req[brv]) {
           score[cha]++
         }
       }
+    }
     while (!done) {
       done = 1
       for (det in score) {
@@ -233,8 +247,9 @@ pub_cache() {
   }
   /last-cache/ {
     getline
-    if (x)
+    if (x) {
       z = z "\n\t" x
+    }
     else {
       print $1
     }
@@ -252,18 +267,21 @@ pub_category() {
   priv_setwd
   awk '
   BEGIN {
-    if (!getline b < ARGV[2])
+    if (!getline b < ARGV[2]) {
       exit 1
+    }
     ARGC--
   }
   {
-    if ($1 == "@")
+    if ($1 == "@") {
       q = $2
+    }
     if ($1 == "category:") {
-      do
+      do {
         if ($NF == b) {
           print q
         }
+      }
       while (--NF)
     }
   }
@@ -274,24 +292,29 @@ pub_depends() {
   priv_setwd
   awk "$LIBAWK"'
   function tree(package,   ec, ro, ta) {
-    if (arr_search(branch, package))
+    if (arr_search(branch, package)) {
       return
+    }
     branch[++ec] = package
-    for (ro in branch)
+    for (ro in branch) {
       printf branch[ro] (ro == ec ? RS : " > ")
-    while (reqs[package, ++ta])
+    }
+    while (reqs[package, ++ta]) {
       tree(reqs[package, ta], ec)
+    }
     delete branch[ec--]
   }
   BEGIN {
     while (getline < ARGV[2]) xr[$0]
-    if (!$0)
+    if (!$0) {
       exit 1
+    }
     ARGC--
   }
   {
-    if ($1 == "@")
+    if ($1 == "@") {
       ya = $2
+    }
     if ($1 == "requires:") {
       for (zu = 2; zu <= NF; zu++) {
         reqs[ya, zu - 1] = $zu
@@ -378,8 +401,9 @@ pub_listall() {
   priv_setwd
   awk '
   BEGIN {
-    if (!getline q < ARGV[2])
+    if (!getline q < ARGV[2]) {
       exit 1
+    }
     ARGC--
   }
   $1 == "@" && $2 ~ q {
@@ -412,8 +436,9 @@ pub_mirror() {
   }
   /last-mirror/ {
     getline
-    if (x)
+    if (x) {
       y = y "\n\t" x
+    }
     else {
       print $1
     }
@@ -431,23 +456,28 @@ pub_rdepends() {
   priv_setwd
   awk "$LIBAWK"'
   function rtree(package,   ec, ro, ta) {
-    if (arr_search(branch, package))
+    if (arr_search(branch, package)) {
       return
+    }
     branch[++ec] = package
-    for (ro in branch)
+    for (ro in branch) {
       printf branch[ro] (ro == ec ? RS : " < ")
-    while (reqs[package, ++ta])
+    }
+    while (reqs[package, ++ta]) {
       rtree(reqs[package, ta], ec)
+    }
     delete branch[ec--]
   }
   BEGIN {
-    if (!getline xr < ARGV[2])
+    if (!getline xr < ARGV[2]) {
       exit 1
+    }
     ARGC--
   }
   {
-    if ($1 == "@")
+    if ($1 == "@") {
       ya = $2
+    }
     if ($1 == "requires:") {
       for (zu = 2; zu <= NF; zu++) {
         reqs[$zu, ++ki[$zu]] = ya
@@ -561,8 +591,9 @@ pub_show() {
   awk '
   BEGIN {
     while (getline < ARGV[2]) x[$0]
-    if (!$0)
+    if (!$0) {
       exit 1
+    }
     ARGC--
   }
   $1 == "@" {

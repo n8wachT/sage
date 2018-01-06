@@ -9,8 +9,9 @@ BEGIN {
       print "setup.ini not found"
       exit 1
     }
-    if ($1 == "@")
+    if ($1 == "@") {
       br = $2
+    }
     if ($1 == "install:" && br) {
       ch[br] = $2
       br = ""
