@@ -68,13 +68,16 @@ priv_download() {
     exit
   }
   ' setup.ini "$pkg" > sha512.sum
-  read sha path < sha512.sum
+  read digest path < sha512.sum
   mv sha512.sum ..
   cd ..
   if ! test -f "$path" || ! sha512sum -c sha512.sum
   then
     priv_webreq "$lastmirror" "$path"
-    sha512sum -c sha512.sum || return
+    if ! sha512sum -c sha512.sum
+    then
+      return
+    fi
   fi
 
   tar -tf "$path" | gzip > /etc/setup/"$pkg".lst.gz
