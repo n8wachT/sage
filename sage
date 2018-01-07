@@ -150,7 +150,6 @@ priv_setwd() {
     priv_getwd
   fi
   . /etc/setup/setup.sh
-  mkdir -p "$lastcache"/"$elastmirror"/"$arch"
   cd "$lastcache"/"$elastmirror"/"$arch"
 }
 
