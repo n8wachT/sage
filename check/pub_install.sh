@@ -3,7 +3,8 @@
 
 q=/etc/setup/make.lst.gz
 for y in /usr/local/http*/x86_64/release/make/make-*.tar.xz
-do :
+do
+  :
 done
 
 # rel=0 setup=0

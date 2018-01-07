@@ -3,7 +3,8 @@
 . ./libsage.sh
 
 for q in /usr/local/http*/x86_64/release/make/make-*.tar.xz
-do :
+do
+  :
 done
 sh_trace sage download
 

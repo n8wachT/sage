@@ -334,7 +334,8 @@ pub_depends() {
 
 pub_download() {
   while read b
-  do priv_download "$b"
+  do
+    priv_download "$b"
   done < /tmp/tar.lst
 }
 
@@ -417,7 +418,8 @@ pub_listall() {
 
 pub_listfiles() {
   if ! read b < /tmp/tar.lst
-  then return
+  then
+    return
   fi
   priv_setwd
   find .. -name "$b"'-*' |
@@ -529,7 +531,8 @@ pub_remove() {
       while read each
       do
         if [ -f /"$each" ]
-        then rm /"$each"
+        then
+          rm /"$each"
         fi
       done < /etc/setup/"$q".lst
       rm -f /etc/setup/"$q".lst.gz /etc/postinstall/"$q".sh.done
@@ -564,7 +567,8 @@ pub_search() {
   for manifest in /etc/setup/*.lst.gz
   do
     if gzip -cd "$manifest" | grep -q -f /tmp/tar.lst
-    then echo "$manifest"
+    then
+      echo "$manifest"
     fi
   done | awk '$0=$4' FS='[./]'
 }
