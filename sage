@@ -656,7 +656,7 @@ do
     ;;
 
     version)
-      echo 2.0.0
+      echo 2.1.0
       exit
     ;;
 
