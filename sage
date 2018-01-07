@@ -13,8 +13,13 @@ function arr_search(rough, diamond,  x, y) {
 }
 function arr_sort(arr,   x, y, z) {
   for (x in arr) {
-    y = arr[x]; z = x - 1
-    while (z && arr[z] > y) {arr[z + 1] = arr[z]; z--} arr[z + 1] = y
+    y = arr[x]
+    z = x - 1
+    while (z && arr[z] > y) {
+      arr[z + 1] = arr[z]
+      z--
+    }
+    arr[z + 1] = y
   }
 }
 function file_exist(file) {
@@ -28,7 +33,8 @@ function mt_trunc(num) {
   return int(num)
 }
 function sh_escape(str,   d, m, x, y, z) {
-  d = "\47"; m = split(str, x, d)
+  d = "\47"
+  m = split(str, x, d)
   for (y in x) {
     z = z d x[y] (y < m ? d "\\" d : d)
   }
@@ -116,6 +122,23 @@ priv_getwd() {
     }
   }
   ' /etc/setup/setup.rc > /etc/setup/setup.sh
+}
+
+priv_getwd2() {
+  awk "$LIBAWK"'
+  BEGIN {
+    FS = "\t"
+  }
+  /last-cache/ {
+    getline
+    x = $2
+  }
+  /last-mirror/ {
+    getline
+    print $2
+    print x "\\" uri_encode($2)
+  }
+  ' /etc/setup/setup.rc
 }
 
 priv_resolve_deps() {
@@ -332,9 +355,9 @@ pub_depends() {
 }
 
 pub_download() {
-  while read b
+  while read x
   do
-    priv_download "$b"
+    priv_download "$x"
   done < /tmp/tar.lst
 }
 
@@ -416,12 +439,12 @@ pub_listall() {
 }
 
 pub_listfiles() {
-  if ! read b < /tmp/tar.lst
+  if ! read x < /tmp/tar.lst
   then
     return
   fi
   priv_setwd
-  find .. -name "$b"'-*' |
+  find .. -name "$x"'-*' |
   awk '
   END {
     system("tar --list --file " $0)
@@ -610,10 +633,13 @@ pub_show() {
 }
 
 pub_update() {
-  priv_setwd
-  cd ..
-  priv_webreq "$lastmirror" "$arch"/setup.xz
-  xzdec < "$arch"/setup.xz > "$arch"/setup.ini
+  priv_getwd2 | {
+    read mirror
+    read -r cache
+    cd "$cache"
+    priv_webreq "$mirror" "$arch"/setup.xz
+    xzdec < "$arch"/setup.xz > "$arch"/setup.ini
+  }
   echo 'Updated setup.ini'
 }
 
