@@ -416,7 +416,7 @@ pub_list() {
     ARGC--
     getline x < ARGV[2]
   }
-  NR > 1 && $1 ~ x {
+  NR > 1 && tolower($1) ~ tolower(x) {
     z = split($2, y, "/")
     print substr(y[z], 1, match(y[z], /\.[[:alpha:]]/) - 1)
   }
@@ -432,7 +432,7 @@ pub_listall() {
     }
     ARGC--
   }
-  $1 == "@" && $2 ~ q {
+  $1 == "@" && tolower($2) ~ tolower(q) {
     print $2
   }
   ' setup.ini /tmp/tar.lst
