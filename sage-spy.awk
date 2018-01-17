@@ -21,9 +21,9 @@ BEGIN {
   }
   while ("curl cygwin.com/mirrors.lst" | getline) {
     split($0, ta, ";")
-    arr_bpush(xr, dom(ta[1]) ";" ta[1])
+    ar_bpush(xr, dom(ta[1]) ";" ta[1])
   }
-  arr_sort(xr)
+  ar_sort(xr)
   for (ya = 1; http < 5 || ftp < 5; ya++) {
     split(xr[ya], zu, ";")
     printf "%20s %.58s\r", "", zu[2]
