@@ -679,6 +679,6 @@ then
   readonly arch=$(uname -m | sed s.i6.x.)
   pub_"$command"
 else
-  cat /usr/local/share/sage.md
+  cat /usr/local/share/sage/readme.md
   exit 1
 fi
