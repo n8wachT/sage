@@ -1,8 +1,6 @@
 #!/bin/dash -e
 # -*- sh -*-
 
-LIBAWK=$(cat /usr/local/share/libstd.awk)
-
 priv_download() {
   pkg=$1
   priv_setwd
@@ -47,7 +45,7 @@ priv_file_newer() {
 }
 
 priv_getwd() {
-  awk "$LIBAWK"'
+  awklib '
   BEGIN {
     FS = "\t"
   }
@@ -70,7 +68,7 @@ priv_getwd() {
 }
 
 priv_getwd2() {
-  awk "$LIBAWK"'
+  awklib '
   BEGIN {
     FS = "\t"
   }
@@ -88,7 +86,7 @@ priv_getwd2() {
 
 priv_resolve_deps() {
   priv_setwd
-  awk "$LIBAWK"'
+  awklib '
   BEGIN {
     while (getline < ARGV[2]) ch[$NF]
     if (!$0) {
@@ -135,7 +133,7 @@ hash
 binary
 get cygwin/$2 $2
 eof
-    awk "$LIBAWK"'
+    awklib '
     BEGIN {
       RS = "#"
       FS = "[( ]"
@@ -260,7 +258,7 @@ pub_category() {
 
 pub_depends() {
   priv_setwd
-  awk "$LIBAWK"'
+  awklib '
   function tree(package,   ec, ro, ta) {
     if (ar_search(branch, package)) {
       return
@@ -321,7 +319,7 @@ pub_install() {
     tar -x -C / -f "$path"
 
     # update the package database
-    awk "$LIBAWK"'
+    awklib '
     BEGIN {
       ARGC = 2
     }
@@ -426,7 +424,7 @@ pub_mirror() {
 
 pub_rdepends() {
   priv_setwd
-  awk "$LIBAWK"'
+  awklib '
   function rtree(package,   ec, ro, ta) {
     if (ar_search(branch, package)) {
       return
