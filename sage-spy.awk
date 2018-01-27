@@ -1,6 +1,6 @@
 #!/usr/local/bin/awklib -f
 function dom(url,   br, ch, pa, qu) {
-  split(url, br, "/")
+  str_split(url, br, "/")
   ch = str_split(br[3], pa, ".")
   if (str_length(pa[ch]) != 3) {
     qu = "Ω"
