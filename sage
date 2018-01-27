@@ -1,62 +1,7 @@
 #!/bin/dash -e
 # -*- sh -*-
 
-LIBAWK='
-function ar_search(rough, diamond,  x, y) {
-  for (x in rough) {
-    if (rough[x] == diamond) {
-      y = 1
-      break
-    }
-  }
-  return y ? x : 0
-}
-function ar_sort(arr,   x, y, z) {
-  for (x in arr) {
-    y = arr[x]
-    z = x - 1
-    while (z && arr[z] > y) {
-      arr[z + 1] = arr[z]
-      z--
-    }
-    arr[z + 1] = y
-  }
-}
-function file_exist(file) {
-  return getline < file < 0 ? 0 : 1
-}
-function mt_ceil(num,   x) {
-  x = mt_trunc(num)
-  return x < num ? x + 1 : x
-}
-function mt_trunc(num) {
-  return int(num)
-}
-function sh_escape(str,   d, m, x, y, z) {
-  d = "\47"
-  m = split(str, x, d)
-  for (y in x) {
-    z = z d x[y] (y < m ? d "\\" d : d)
-  }
-  return z
-}
-function str_chr(num) {
-  if (num < 0 || num > 65535) {
-    return -1
-  }
-  return sprintf("%c", num)
-}
-function str_ord(stn,   x) {
-  while (str_chr(++x) != substr(stn, 1, 1));
-  return x
-}
-function uri_encode(stn,   k, q, z) {
-  while (k = substr(stn, ++q, 1)) {
-    z = z (k ~ /[[:alnum:]_.!~*\47()-]/ ? k : "%" sprintf("%02X", str_ord(k)))
-  }
-  return z
-}
-'
+LIBAWK=$(cat /usr/local/share/libstd.awk)
 
 priv_download() {
   pkg=$1
