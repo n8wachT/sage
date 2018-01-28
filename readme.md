@@ -20,7 +20,7 @@ Steven Penny
 Links
 --------------------
 - [Documentation][2]
-- [svnpenn/stdlib (awklib)][3]
+- [svnpenn/stdlib (awklib, file-newer, sh-trace)][3]
 
 [protocol is needed for image to render]::
 [1]:https://raw.githubusercontent.com/svnpenn/sage/master/docs/sage.jpg

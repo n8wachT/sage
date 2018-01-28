@@ -32,18 +32,6 @@ priv_download() {
   tar -tf "$path" | gzip > /etc/setup/"$pkg".lst.gz
 }
 
-priv_file_newer() {
-  if [ ! -f "$1" ]
-  then
-    return 1
-  elif [ ! -f "$2" ]
-  then
-    return 0
-  else
-    find "$2" -newer "$1" -exec false {} +
-  fi
-}
-
 priv_getwd() {
   awklib '
   BEGIN {
@@ -111,7 +99,7 @@ priv_resolve_deps() {
 }
 
 priv_setwd() {
-  if priv_file_newer /etc/setup/setup.rc /etc/setup/setup.sh
+  if file-newer /etc/setup/setup.rc /etc/setup/setup.sh
   then
     priv_getwd
   fi
