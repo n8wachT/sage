@@ -1,6 +1,6 @@
 Cygwin package manager
 =========================
-![sage.jpg 540 x 360][qu]
+![sage.jpg 540 x 360][1]
 
 Sage is a Cygwin package manager. It includes a command-line installer for
 Cygwin which cooperates with Cygwin Setup and uses the same repository.
@@ -13,16 +13,16 @@ Install
 
 3. Run `./install.sh`
 
-Links
----------------------
-- [Documentation][ya]
-- [StdLib][ec]
-
 Author
 ------------
 Steven Penny
 
+Links
+--------------------
+- [Documentation][2]
+- [svnpenn/stdlib (awklib)][3]
+
 [protocol is needed for image to render]::
-[ec]:https://github.com/svnpenn/stdlib
-[qu]:https://raw.githubusercontent.com/svnpenn/sage/master/docs/sage.jpg
-[ya]:https://github.com/svnpenn/sage/blob/master/docs/sage.md
+[1]:https://raw.githubusercontent.com/svnpenn/sage/master/docs/sage.jpg
+[2]:https://github.com/svnpenn/sage/blob/master/docs/sage.md
+[3]:https://github.com/svnpenn/stdlib
