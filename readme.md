@@ -24,5 +24,5 @@ Links
 
 [protocol is needed for image to render]::
 [1]:https://raw.githubusercontent.com/svnpenn/sage/master/docs/sage.jpg
-[2]:https://github.com/svnpenn/sage/blob/master/docs/sage.md
+[2]:https://github.com/svnpenn/sage/blob/master/docs/readme.md
 [3]:https://github.com/svnpenn/stdlib
