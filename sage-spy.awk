@@ -1,7 +1,7 @@
 #!/usr/local/bin/awklib -f
 function dom(url,   br, ch, pa, qu) {
-  rx_split("/", url, br)
-  ch = rx_split(".", br[3], pa)
+  str_split("/", url, br)
+  ch = str_split(".", br[3], pa)
   if (str_length(pa[ch]) != 3) {
     qu = "Ω"
   }
@@ -19,15 +19,15 @@ BEGIN {
     exit 1
   }
   while ("curl cygwin.com/mirrors.lst" | getline) {
-    rx_split(";", $0, ta)
+    str_split(";", $0, ta)
     ar_bpush(xr, dom(ta[1]) ";" ta[1])
   }
   ar_sort(xr)
   for (ya = 1; http < 5 || ftp < 5; ya++) {
-    rx_split(";", xr[ya], zu)
+    str_split(";", xr[ya], zu)
     printf "%20s %.58s\r", "", zu[2]
     while ("timeout " ARGV[1] " curl -Is " zu[2] "x86_64/setup.xz" | getline) {
-      rx_split(", ", $0, ta)
+      str_split(", ", $0, ta)
       if (tolower(ta[1]) ~ "last-modified") {
         printf "%.20s\r", ta[2]
       }
