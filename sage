@@ -557,7 +557,7 @@ pub_show() {
     ARGC--
   }
   $1 == "@" {
-    y = $2 in x ? 1 : 0
+    y = $2 in x
   }
   y
   ' setup.ini /tmp/tar.lst
