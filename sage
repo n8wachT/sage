@@ -104,6 +104,8 @@ priv_setwd() {
     priv_getwd
   fi
   . /etc/setup/setup.sh
+  # need this when changing mirrors
+  mkdir -p "$lastcache"/"$elastmirror"/"$arch"
   cd "$lastcache"/"$elastmirror"/"$arch"
 }
 
