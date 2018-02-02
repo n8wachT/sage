@@ -55,23 +55,6 @@ priv_getwd() {
   ' /etc/setup/setup.rc > /etc/setup/setup.sh
 }
 
-priv_getwd2() {
-  awklib '
-  BEGIN {
-    FS = "\t"
-  }
-  /last-cache/ {
-    getline
-    x = $2
-  }
-  /last-mirror/ {
-    getline
-    print $2
-    print x "\\" uri_encode($2)
-  }
-  ' /etc/setup/setup.rc
-}
-
 priv_resolve_deps() {
   priv_setwd
   awklib '
@@ -566,13 +549,11 @@ pub_show() {
 }
 
 pub_update() {
-  priv_getwd2 | {
-    read mirror
-    read -r cache
-    cd "$cache"
-    priv_webreq "$mirror" "$arch"/setup.xz
-    xzdec < "$arch"/setup.xz > "$arch"/setup.ini
-  }
+  # need this when changing mirrors
+  priv_setwd
+  cd ..
+  priv_webreq "$mirror" "$arch"/setup.xz
+  xzdec < "$arch"/setup.xz > "$arch"/setup.ini
   echo 'Updated setup.ini'
 }
 
