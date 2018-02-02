@@ -552,7 +552,7 @@ pub_update() {
   # need this when changing mirrors
   priv_setwd
   cd ..
-  priv_webreq "$mirror" "$arch"/setup.xz
+  priv_webreq "$lastmirror" "$arch"/setup.xz
   xzdec < "$arch"/setup.xz > "$arch"/setup.ini
   echo 'Updated setup.ini'
 }
