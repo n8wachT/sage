@@ -329,12 +329,13 @@ pub_install() {
 pub_list() {
   awk '
   BEGIN {
+    getline q < ARGV[2]
     ARGC--
-    getline x < ARGV[2]
   }
-  NR > 1 && tolower($1) ~ tolower(x) {
-    z = split($2, y, "/")
-    print substr(y[z], 1, match(y[z], /\.[[:alpha:]]/) - 1)
+  # q is already lower, so we dont need to touch it
+  NR > 1 && tolower($1) ~ q {
+    x = split($2, z, "/")
+    print substr(z[x], 1, match(z[x], /\.[[:alpha:]]/) - 1)
   }
   ' /etc/setup/installed.db /tmp/tar.lst
 }
