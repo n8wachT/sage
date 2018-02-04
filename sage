@@ -101,6 +101,7 @@ priv_webreq() {
   then
     curl -o "$2" "$1"/"$2"
   else
+    printf '\33[1;33m%s\33[m\n' "$2"
     ftp -Av mirrors.sonic.net <<eof |
 hash
 binary
@@ -112,10 +113,10 @@ eof
       FS = "[( ]"
     }
     NR == 1 {
-      q = $(NF - 1) / (2048 * 100)
+      x = $(NF - 1) / (2048 * 100)
     }
-    NR % mt_ceil(q) == 0 {
-      printf "%d%%\r", ++x
+    !mt_mod(NR, mt_ceil(x)) {
+      printf "%d%%\r", ++z
     }
     END {
       print ""
