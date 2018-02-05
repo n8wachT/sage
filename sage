@@ -572,7 +572,7 @@ do
     ;;
 
     version)
-      echo 2.3.0
+      echo 2.4.0
       exit
     ;;
 
