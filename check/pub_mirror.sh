@@ -1,10 +1,9 @@
 #!/bin/dash -e
-. ./libsage.sh
-sh_trace sage mirror alfa
+sh-trace sage mirror alfa
 echo
-sh_trace sage mirror
+sh-trace sage mirror
 echo
 
-sh_trace sage mirror http://cygwin.mirror.constant.com/
+sh-trace sage mirror http://cygwin.mirror.constant.com/
 echo
-sh_trace sage mirror
+sh-trace sage mirror

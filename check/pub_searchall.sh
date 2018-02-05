@@ -1,6 +1,4 @@
 #!/bin/dash -e
-. ./libsage.sh
-
-sh_trace sage searchall
-sh_trace sage searchall usr/bin/awj
-sh_trace sage searchall usr/bin/awk
+sh-trace sage searchall
+sh-trace sage searchall usr/bin/awj
+sh-trace sage searchall usr/bin/awk

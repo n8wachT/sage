@@ -1,6 +1,4 @@
 #!/bin/dash -e
-. ./libsage.sh
-
-sh_trace sage show
-sh_trace sage show mak
-sh_trace sage show make
+sh-trace sage show
+sh-trace sage show mak
+sh-trace sage show make

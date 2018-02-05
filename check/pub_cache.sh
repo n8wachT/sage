@@ -1,15 +1,14 @@
 #!/bin/dash -e
-. ./libsage.sh
-sh_trace sage cache alfa
+sh-trace sage cache alfa
 echo
-sh_trace sage cache
-echo
-
-sh_trace sage cache ''
-echo
-sh_trace sage cache
+sh-trace sage cache
 echo
 
-sh_trace sage cache 'C:\ProgramData\Sage'
+sh-trace sage cache ''
 echo
-sh_trace sage cache
+sh-trace sage cache
+echo
+
+sh-trace sage cache 'C:\ProgramData\Sage'
+echo
+sh-trace sage cache

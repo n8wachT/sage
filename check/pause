@@ -1,0 +1,4 @@
+#!/bin/dash
+printf '\nPress Enter to continue...\n'
+read x
+printf '\33c'

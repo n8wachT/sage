@@ -1,5 +1,4 @@
 #!/bin/dash -e
-. ./libsage.sh
-sh_trace sage list
-pause
-sh_trace sage list ^g
+sh-trace sage list
+./pause
+sh-trace sage list ^g
