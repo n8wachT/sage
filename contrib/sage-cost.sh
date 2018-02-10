@@ -1,5 +1,13 @@
 #!/bin/dash -e
-if [ "$#" -lt 2 ]
+wh=$(mktemp)
+
+if [ "$1" = ex ]
+then
+  sage category Base |
+  xargs sage depends |
+  awk '$0=$NF' |
+  sort -u > "$wh"
+elif [ "$1" != in ]
 then
   cat <<'eof'
 SYNOPSIS
@@ -11,17 +19,7 @@ BASE
 eof
   exit 1
 fi
-br=$1
 shift
-wh=$(mktemp)
-
-if [ "$br" = ex ]
-then
-  sage category Base |
-  xargs sage depends |
-  awk '$0=$NF' |
-  sort -u > "$wh"
-fi
 
 sage depends "$@" |
 awk '$0=$NF' |
