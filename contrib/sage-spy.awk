@@ -1,4 +1,4 @@
-#!/usr/local/bin/awklib -f
+#!/usr/local/bin/velour -f
 function dom(url,   br, ch, pa, qu) {
   str_split("/", url, br)
   ch = str_split(".", br[3], pa)

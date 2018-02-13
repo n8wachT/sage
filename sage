@@ -33,7 +33,7 @@ priv_download() {
 }
 
 priv_getwd() {
-  awklib '
+  velour '
   BEGIN {
     FS = "\t"
   }
@@ -57,7 +57,7 @@ priv_getwd() {
 
 priv_resolve_deps() {
   priv_setwd
-  awklib '
+  velour '
   BEGIN {
     while (getline < ARGV[2]) ch[$NF]
     if (!$0) {
@@ -107,7 +107,7 @@ hash
 binary
 get cygwin/$2 $2
 eof
-    awklib '
+    velour '
     BEGIN {
       RS = "#"
       FS = "[( ]"
@@ -232,7 +232,7 @@ pub_category() {
 
 pub_depends() {
   priv_setwd
-  awklib '
+  velour '
   function tree(package,   ec, ro, ta) {
     if (ar_search(branch, package)) {
       return
@@ -293,7 +293,7 @@ pub_install() {
     tar -x -C / -f "$path"
 
     # update the package database
-    awklib '
+    velour '
     BEGIN {
       ARGC = 2
     }
@@ -399,7 +399,7 @@ pub_mirror() {
 
 pub_rdepends() {
   priv_setwd
-  awklib '
+  velour '
   function rtree(package,   ec, ro, ta) {
     if (ar_search(branch, package)) {
       return
