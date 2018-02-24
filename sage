@@ -72,7 +72,7 @@ priv_resolve_deps() {
     if ($1 == "install:" && br in ch) {
       delete ch[br]
       de = $2
-      if (file_exist("../" de) && file_exist("/etc/setup/" br ".lst.gz")) {
+      if (io_exists("../" de) && io_exists("/etc/setup/" br ".lst.gz")) {
         next
       }
       print br
@@ -82,7 +82,7 @@ priv_resolve_deps() {
 }
 
 priv_setwd() {
-  if file-newer /etc/setup/setup.rc /etc/setup/setup.sh
+  if io-newer /etc/setup/setup.rc /etc/setup/setup.sh
   then
     priv_getwd
   fi
