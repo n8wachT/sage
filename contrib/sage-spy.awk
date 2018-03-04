@@ -22,7 +22,7 @@ BEGIN {
     str_split(";", $0, ta)
     a_push(xr, dom(ta[1]) ";" ta[1])
   }
-  ar_sort(xr)
+  a_sort(xr)
   for (ya = 1; http < 5 || ftp < 5; ya++) {
     str_split(";", xr[ya], zu)
     printf "%20s %.58s\r", "", zu[2]

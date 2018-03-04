@@ -308,7 +308,7 @@ pub_install() {
       for (xr in ro) {
         ya[++zu] = xr FS ro[xr]
       }
-      ar_sort(ya)
+      a_sort(ya)
       for (xr in ya) {
         qu = qu RS ya[xr]
       }
