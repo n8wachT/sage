@@ -20,7 +20,7 @@ BEGIN {
   }
   while ("curl cygwin.com/mirrors.lst" | getline) {
     str_split(";", $0, ta)
-    ar_bpush(xr, dom(ta[1]) ";" ta[1])
+    a_push(xr, dom(ta[1]) ";" ta[1])
   }
   ar_sort(xr)
   for (ya = 1; http < 5 || ftp < 5; ya++) {
