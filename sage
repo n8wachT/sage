@@ -48,8 +48,8 @@ priv_getwd() {
   }
   END {
     for (y in x) {
-      print y "=" sh_escape(x[y])
-      print "e" y "=" sh_escape(uri_encode(x[y]))
+      print y "=" k_shellesc(x[y])
+      print "e" y "=" k_shellesc(uri_encode(x[y]))
     }
   }
   ' /etc/setup/setup.rc > /etc/setup/setup.sh
