@@ -115,7 +115,7 @@ eof
     NR == 1 {
       x = $(NF - 1) / (2048 * 100)
     }
-    !mt_mod(NR, mt_ceil(x)) {
+    !mt_mod(NR, n_ceil(x)) {
       printf "%d%%\r", ++z
     }
     END {
