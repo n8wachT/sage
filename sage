@@ -72,7 +72,7 @@ priv_resolve_deps() {
     if ($1 == "install:" && br in ch) {
       delete ch[br]
       de = $2
-      if (io_exists("../" de) && io_exists("/etc/setup/" br ".lst.gz")) {
+      if (io_exist("../" de) && io_exist("/etc/setup/" br ".lst.gz")) {
         next
       }
       print br
