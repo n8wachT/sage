@@ -1,4 +1,4 @@
 #!/bin/dash -e
-sh-trace sage searchall
-sh-trace sage searchall usr/bin/awj
-sh-trace sage searchall usr/bin/awk
+k-trace sage searchall
+k-trace sage searchall usr/bin/awj
+k-trace sage searchall usr/bin/awk

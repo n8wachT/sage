@@ -1,4 +1,4 @@
 #!/bin/dash -e
-sh-trace sage category
+k-trace sage category
 ./pause
-sh-trace sage category Base
+k-trace sage category Base

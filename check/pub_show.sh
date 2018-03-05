@@ -1,4 +1,4 @@
 #!/bin/dash -e
-sh-trace sage show
-sh-trace sage show mak
-sh-trace sage show make
+k-trace sage show
+k-trace sage show mak
+k-trace sage show make

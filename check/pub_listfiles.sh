@@ -1,4 +1,4 @@
 #!/bin/dash -e
-sh-trace sage listfiles
+k-trace sage listfiles
 ./pause
-sh-trace sage listfiles make
+k-trace sage listfiles make

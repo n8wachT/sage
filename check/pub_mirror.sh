@@ -1,9 +1,9 @@
 #!/bin/dash -e
-sh-trace sage mirror alfa
+k-trace sage mirror alfa
 echo
-sh-trace sage mirror
+k-trace sage mirror
 echo
 
-sh-trace sage mirror http://cygwin.mirror.constant.com/
+k-trace sage mirror http://cygwin.mirror.constant.com/
 echo
-sh-trace sage mirror
+k-trace sage mirror

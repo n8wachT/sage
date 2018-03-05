@@ -1,6 +1,6 @@
 #!/bin/dash -e
-sh-trace sage rdepends
+k-trace sage rdepends
 ./pause
-sh-trace sage rdepends mak
+k-trace sage rdepends mak
 ./pause
-sh-trace sage rdepends make
+k-trace sage rdepends make

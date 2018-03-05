@@ -1,6 +1,6 @@
 #!/bin/dash -e
-sh-trace sage depends
+k-trace sage depends
 ./pause
-sh-trace sage depends mak
+k-trace sage depends mak
 ./pause
-sh-trace sage depends make
+k-trace sage depends make

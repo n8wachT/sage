@@ -1,4 +1,4 @@
 #!/bin/dash -e
-sh-trace sage list
+k-trace sage list
 ./pause
-sh-trace sage list ^g
+k-trace sage list ^g

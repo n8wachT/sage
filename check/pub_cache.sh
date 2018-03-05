@@ -1,14 +1,14 @@
 #!/bin/dash -e
-sh-trace sage cache alfa
+k-trace sage cache alfa
 echo
-sh-trace sage cache
-echo
-
-sh-trace sage cache ''
-echo
-sh-trace sage cache
+k-trace sage cache
 echo
 
-sh-trace sage cache 'C:\ProgramData\Sage'
+k-trace sage cache ''
 echo
-sh-trace sage cache
+k-trace sage cache
+echo
+
+k-trace sage cache 'C:\ProgramData\Sage'
+echo
+k-trace sage cache

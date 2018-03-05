@@ -1,4 +1,4 @@
 #!/bin/dash -e
-sh-trace sage search
-sh-trace sage search bin/wk
-sh-trace sage search bin/awk
+k-trace sage search
+k-trace sage search bin/wk
+k-trace sage search bin/awk

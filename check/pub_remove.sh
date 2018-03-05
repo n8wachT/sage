@@ -1,13 +1,13 @@
 #!/bin/dash -e
-sh-trace sage remove
-sh-trace sage remove mak
+k-trace sage remove
+k-trace sage remove mak
 
 # installed
-sh-trace sage install make
-sh-trace sage remove make
+k-trace sage install make
+k-trace sage remove make
 
 # not installed
-sh-trace sage remove make
+k-trace sage remove make
 
 # essential
-sh-trace sage remove xz
+k-trace sage remove xz

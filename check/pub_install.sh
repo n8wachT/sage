@@ -6,19 +6,19 @@ do
 done
 
 # rel=0 setup=0
-sh-trace rm -fv "$y" "$q"
-sh-trace sage install make
+k-trace rm -fv "$y" "$q"
+k-trace sage install make
 ./pause
 
 # rel=0 setup=1
-sh-trace rm -fv "$y"
-sh-trace sage install make
+k-trace rm -fv "$y"
+k-trace sage install make
 ./pause
 
 # rel=1 setup=0
-sh-trace rm -fv "$q"
-sh-trace sage install make
+k-trace rm -fv "$q"
+k-trace sage install make
 ./pause
 
 # rel=1 setup=1
-sh-trace sage install make
+k-trace sage install make
