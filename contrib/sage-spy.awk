@@ -15,7 +15,7 @@ function dom(url,   br, ch, pa, qu) {
 BEGIN {
   if (ARGC != 2) {
     sb["sage-spy.awk <timeout>", "", "try 2.1 for FTP"]
-    print arb_join(sb, RS)
+    print ab_join(sb, RS)
     exit 1
   }
   while ("curl cygwin.com/mirrors.lst" | getline) {
