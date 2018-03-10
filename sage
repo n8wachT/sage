@@ -42,8 +42,7 @@ priv_getwd() {
       x[y] = x[y] ? x[y] "," $2 : $2
     }
     else {
-      sub("-", "")
-      y = $0
+      y = s_sub($0, "-", "")
     }
   }
   END {
