@@ -234,7 +234,7 @@ pub_depends() {
   priv_setwd
   velour '
   function tree(package,   ec, ro, ta) {
-    if (h_value(package, branch)) {
+    if (h_value(branch, package)) {
       return
     }
     branch[++ec] = package
@@ -401,7 +401,7 @@ pub_rdepends() {
   priv_setwd
   velour '
   function rtree(package,   ec, ro, ta) {
-    if (h_value(package, branch)) {
+    if (h_value(branch, package)) {
       return
     }
     branch[++ec] = package
