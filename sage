@@ -461,10 +461,10 @@ pub_remove() {
     }
     ' /tmp/rmv.lst /etc/setup/"$q".lst
     then
-      echo 'Removing' "$q"
+      printf 'Removing %s\n' "$q"
       if [ -f /etc/preremove/"$q".sh ]
       then
-        /etc/preremove/"$q".sh
+        k-trace /etc/preremove/"$q".sh
         rm /etc/preremove/"$q".sh
       fi
       while read each
