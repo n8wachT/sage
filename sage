@@ -59,7 +59,7 @@ priv_resolve_deps() {
   velour '
   BEGIN {
     while (getline < ARGV[2]) {
-      ch[$NF]
+      k[$NF]
     }
     if (!$0) {
       exit 1
@@ -68,15 +68,15 @@ priv_resolve_deps() {
   }
   {
     if ($1 == "@") {
-      br = $2
+      m = $2
     }
-    if ($1 == "install:" && br in ch) {
-      delete ch[br]
-      de = $2
-      if (io_exist("../" de) && io_exist("/etc/setup/" br ".lst.gz")) {
+    if ($1 == "install:" && m in k) {
+      delete k[m]
+      q = $2
+      if (io_exist("../" q) && io_exist("/etc/setup/" m ".lst.gz")) {
         next
       }
-      print br
+      print m
     }
   }
   ' setup.ini "$1"
