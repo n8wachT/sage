@@ -58,7 +58,9 @@ priv_resolve_deps() {
   priv_setwd
   velour '
   BEGIN {
-    while (getline < ARGV[2]) ch[$NF]
+    while (getline < ARGV[2]) {
+      ch[$NF]
+    }
     if (!$0) {
       exit 1
     }
@@ -246,7 +248,9 @@ pub_depends() {
     delete branch[ec--]
   }
   BEGIN {
-    while (getline < ARGV[2]) xr[$0]
+    while (getline < ARGV[2]) {
+      xr[$0]
+    }
     if (!$0) {
       exit 1
     }
@@ -536,7 +540,9 @@ pub_show() {
   priv_setwd
   awk '
   BEGIN {
-    while (getline < ARGV[2]) x[$0]
+    while (getline < ARGV[2]) {
+      x[$0]
+    }
     if (!$0) {
       exit 1
     }
