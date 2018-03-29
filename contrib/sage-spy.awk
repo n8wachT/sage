@@ -1,7 +1,8 @@
 #!/usr/local/bin/velour -f
 function dom(url,   br, ch, pa, qu) {
   s_split(url, br, "/")
-  ch = s_split(br[3], pa, ".")
+  s_split(br[3], pa, ".")
+  ch = a_length(pa)
   if (s_length(pa[ch]) != 3) {
     qu = "Ω"
   }
