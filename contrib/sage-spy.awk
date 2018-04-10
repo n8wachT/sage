@@ -2,7 +2,7 @@
 function dom(url,   br, ch, pa, qu) {
   s_split(url, br, "/")
   s_split(br[3], pa, ".")
-  ch = h_length(pa)
+  ch = a_length(pa)
   if (s_length(pa[ch]) != 3) {
     qu = "Ω"
   }
