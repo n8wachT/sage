@@ -540,8 +540,9 @@ pub_show() {
   priv_setwd
   awk '
   BEGIN {
+    # need to loop for sage-cost
     while (getline < ARGV[2]) {
-      x[$0]
+      q[$0]
     }
     if (!$0) {
       exit 1
@@ -549,9 +550,11 @@ pub_show() {
     ARGC--
   }
   $1 == "@" {
-    y = $2 in x
+    z = $2 in q
   }
-  y
+  z {
+    print $1 ~ /version|prev|test/ ? "\33[1;33m" $0 "\33[m" : $0
+  }
   ' setup.ini /tmp/tar.lst
 }
 
