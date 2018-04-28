@@ -553,7 +553,8 @@ pub_show() {
     z = $2 in q
   }
   z {
-    print $1 ~ /version|prev|test/ ? "\33[1;33m" $0 "\33[m" : $0
+    print $1 == "version:" || $1 == "[prev]" ||
+    $1 == "[test]" ? "\33[1;33m" $0 "\33[m" : $0
   }
   ' setup.ini /tmp/tar.lst
 }
